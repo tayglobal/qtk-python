@@ -5,7 +5,7 @@ def request_error_handler(e):
     blpapilog.error(str(e))
 
 
-class BlpapiRequestHandler():
+class BlpapiRequestHandler(object):
 
     def __init__(self, host="localhost", port=8194):
         self.options = blpapi.SessionOptions()
@@ -39,7 +39,7 @@ class BlpapiRequestHandler():
         :param error_handler: function that handles error
         :return:
         """
-        request = request_handler(self.ref_data_service)
+        request = request_handler(self.session)
         self.session.sendRequest(request)
         output = {}
         try:
