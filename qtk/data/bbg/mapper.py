@@ -1,4 +1,4 @@
-from .. import fieldlist as fl
+from .. import fields as fl
 
 __field_list_pair = [
     ("BPIPE_REFERENCE_SECURITY_CLASS", fl.ASSET_CLASS),
