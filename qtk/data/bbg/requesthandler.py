@@ -31,7 +31,8 @@ class BlpapiRequestHandler(object):
     def stop_session(self):
         self.session.stop()
 
-    def send_request(self, request_handler, event_handler, error_handler=request_error_handler):
+    def send_request(self, request_handler, event_handler,
+                     error_handler=request_error_handler, output=None):
         """
 
         :param request_handler: function that fills out the bloomberg request
@@ -41,7 +42,7 @@ class BlpapiRequestHandler(object):
         """
         request = request_handler(self.session)
         self.session.sendRequest(request)
-        output = {}
+        output = output if output is not None else {}
         try:
             while True:
                 event = self.session.nextEvent(500)

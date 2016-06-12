@@ -1,7 +1,13 @@
 
-class FieldType(object):
-    def __init__(self, field_type_name, field_type):
-        self._typ = field_type
+
+INT_TYPE = 1
+FLOAT_TYPE = 2
+STR_TYPE = 3
+DATE_TYPE = 4
+FREQ_TYPE = 5
+DAY_COUNT_TYPE = 6
+LIST_TYPE = 20
+DICT_TYPE = 21
 
 
 class FieldName(object):
@@ -20,11 +26,16 @@ class FieldName(object):
     def __repr__(self):
         return self._name
 
+    @property
     def id(self):
         return self._id
 
+    @property
     def description(self):
         return self._desc
+
+    def data_type(self):
+        return self._data_type
 
     @staticmethod
     def toid(name):
@@ -36,20 +47,24 @@ class FieldName(object):
 
 
 # In alphabetical order
-ASSET_CLASS = FieldName("Asset Class", "Asset class of a security", str)
+ASSET_CLASS = FieldName("Asset Class", "Asset class of a security", STR_TYPE)
 
-COUPON = FieldName("Coupon", "Coupon of a bond in % units", float)
-COUPON_FREQ = FieldName("Coupon Frequency", "Coupon frequency of a bond", int)
+COUPON = FieldName("Coupon", "Coupon of a bond in % units", FLOAT_TYPE)
+COUPON_FREQ = FieldName("Coupon Frequency", "Coupon frequency of a bond", FREQ_TYPE)
+CURVE_MEMBERS = FieldName("Curve Members","Members constituting and index or curve", LIST_TYPE)
 
-DAY_COUNT = FieldName("Day Count", "Day count of a security", object)
+DATA_SOURCE = FieldName("Data Source", "Data vendor source", STR_TYPE)
+DAY_COUNT = FieldName("Day Count", "Day count of a security", DAY_COUNT_TYPE)
 
-ISSUE_DATE = FieldName("Issue Date", "Date of issuance of a security", object)
+ISSUE_DATE = FieldName("Issue Date", "Date of issuance of a security", DATE_TYPE)
 
-MATURITY_DATE = FieldName("Maturity Date", "Maturity date of a security", object)
+MATURITY_DATE = FieldName("Maturity Date", "Maturity date of a security", DATE_TYPE)
 
-PRICE_LAST = FieldName("Price Last", "Last price of a security", float)
+PRICE_LAST = FieldName("Price Last", "Last price of a security", FLOAT_TYPE)
 
-SECURITY_TYPE = FieldName("Security Type", "Security Type", str)
-SECURITY_SUBTYPE = FieldName("Security Subtype", "Security Subtype", str)
+SECURITY_DATA = FieldName("Security Data", "Security refernce data", DICT_TYPE)
+SECURITY_ID = FieldName("Security Id", "Security identifier", STR_TYPE)
+SECURITY_TYPE = FieldName("Security Type", "Security Type", STR_TYPE)
+SECURITY_SUBTYPE = FieldName("Security Subtype", "Security Subtype", STR_TYPE)
 
-TICKER = FieldName("Ticker", "Ticker identifier for a security", str)
+TICKER = FieldName("Ticker", "Ticker identifier for a security", STR_TYPE)

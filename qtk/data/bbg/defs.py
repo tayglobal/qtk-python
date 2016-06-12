@@ -1,12 +1,12 @@
 import blpapi
 
 
-DATE = blpapi.Name("date")
-ERROR_INFO = blpapi.Name("errorInfo")
-EVENT_TIME = blpapi.Name("EVENT_TIME")
-FIELD_DATA = blpapi.Name("fieldData")
-FIELD_EXCEPTIONS = blpapi.Name("fieldExceptions")
-FIELD_ID = blpapi.Name("fieldId")
-SECURITY = blpapi.Name("security")
-SECURITY_DATA = blpapi.Name("securityData")
-CURVE_MEMBERS = blpapi.Name("CURVE_MEMBERS")
+BLP_DATE = blpapi.Name("date")
+BLP_ERROR_INFO = blpapi.Name("errorInfo")
+BLP_EVENT_TIME = blpapi.Name("EVENT_TIME")
+BLP_FIELD_DATA = blpapi.Name("fieldData")
+BLP_FIELD_EXCEPTIONS = blpapi.Name("fieldExceptions")
+BLP_FIELD_ID = blpapi.Name("fieldId")
+BLP_SECURITY = blpapi.Name("security")
+BLP_SECURITY_DATA = blpapi.Name("securityData")
+BLP_CURVE_MEMBERS = blpapi.Name("CURVE_MEMBERS")
