@@ -8,4 +8,3 @@ def get_curve_members(field_data, field_name="CURVE_MEMBERS"):
                      for i in range(curve_members_e.numValues())]
     return curve_members
 
-
