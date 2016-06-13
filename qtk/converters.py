@@ -1,7 +1,7 @@
 import QuantLib as ql
 import datetime
 from dateutil.parser import parse
-
+from common import Instance
 
 class QuantLibFactory(object):
 
@@ -87,8 +87,9 @@ class QuantLibFactory(object):
 
     @classmethod
     def to_date(cls, date):
-
-        if isinstance(date, datetime.date ) or isinstance(date, datetime.datetime):
+        if isinstance(date, ql.Date):
+            ql_date = date
+        elif isinstance(date, datetime.date ) or isinstance(date, datetime.datetime):
             ql_date = ql.Date(date.day, date.month, date.year)
         elif isinstance(date, str):
             d = parse(date)
@@ -97,35 +98,33 @@ class QuantLibFactory(object):
             year, rest = divmod(date, 10000)
             month, day = divmod(rest, 100)
             ql_date = ql.Date(day, month, year)
-        elif isinstance(date, ql.Date):
-            ql_date = date
         else:
             raise ValueError("Unrecognized date format")
         return ql_date
 
     @classmethod
     def to_date_yyyymmdd(cls, date):
-        if isinstance(date, datetime.date) or isinstance(date, datetime.datetime):
+        if isinstance(date, int):
+            yyyymmdd = date
+        elif isinstance(date, datetime.date) or isinstance(date, datetime.datetime):
             yyyymmdd = date.year*10000 + date.month*100 + date.day
         elif isinstance(date, str):
             d = parse(date)
             yyyymmdd = d.year*10000 + d.month*100 + d.day
         elif isinstance(date, ql.Date):
             yyyymmdd = date.year()*10000 + date.month()*100 + date.dayOfMonth()
-        elif isinstance(date, int):
-            yyyymmdd = date
         else:
             raise ValueError("Unrecognized date format")
         return yyyymmdd
 
     @classmethod
     def to_date_py(cls, date):
-        if isinstance(date, str):
-            date_py = parse(date).date()
-        elif isinstance(date, datetime.date) or isinstance(date, datetime.datetime):
+        if isinstance(date, datetime.date) or isinstance(date, datetime.datetime):
             date_py = date
+        elif isinstance(date, str):
+            date_py = parse(date).date()
         elif isinstance(date, ql.Date):
-            date_py = datetime.date(date.year(), date.month(),date.dayOfMonth())
+            date_py = datetime.date(date.year(), date.month(), date.dayOfMonth())
         elif isinstance(date, int):
             year, rest = divmod(date, 10000)
             month, day = divmod(rest, 100)
@@ -133,6 +132,16 @@ class QuantLibFactory(object):
         else:
             raise ValueError("Unrecognized date format")
         return date_py
+
+    @classmethod
+    def to_instance(cls, instance):
+        if isinstance(instance, Instance):
+            return instance
+        elif isinstance(instance, str):
+            return Instance.lookup_instance(instance)
+        else:
+            raise ValueError("Unrecognized instance")
+
 
     @classmethod
     def to_day_convention(cls, day_convention):

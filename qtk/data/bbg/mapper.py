@@ -47,7 +47,8 @@ def fmt(e, f):
         return ele.getElementAsFloat(field)
 
     def _to_day_count(ele, field):
-        return ele.getElementAsString(field)
+        dc = ele.getElementAsString(field)
+        return qlf.to_daycount(dc)
 
     def _to_date(ele, field):
         date = ele.getElementAsString(field)

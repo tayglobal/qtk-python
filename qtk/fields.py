@@ -6,12 +6,14 @@ class DataType(object):
     INT = 1
     FLOAT = 2
     STRING = 3
-    DATE = 4
-    FREQUENCY = 5
-    DAYCOUNT = 6
-    DAY_CONVENTION = 7
-    LIST = 20
-    DICT = 21
+    BOOL = 4
+    LIST = 5
+    DICT = 6
+    DATE = 11
+    FREQUENCY = 12
+    DAYCOUNT = 13
+    DAY_CONVENTION = 14
+    CALENDAR = 15
 
 
 class FieldName(Name):
@@ -35,14 +37,19 @@ class Field(object):
     # In alphabetical order
     ASOF_DATE = FieldName("As Of Date", "Reference date or as of date", DataType.DATE)
     ASSET_CLASS = FieldName("Asset Class", "Asset class of a security", DataType.STRING)
-    DAY_CONVENTION = FieldName("Day Convention", "Bussiness day convention", DataType.DAY_CONVENTION)
+    CALENDAR = FieldName("Calendar", "Calendar", DataType.CALENDAR)
+    CONVENTIONS = FieldName("Conventions", "Conventions for instruments, models or indices", DataType.DICT)
     COUPON = FieldName("Coupon", "Coupon of a bond in % units", DataType.FLOAT)
     COUPON_FREQ = FieldName("Coupon Frequency", "Coupon frequency of a bond", DataType.FREQUENCY)
     CURRENCY = FieldName("Currency", "Currency", DataType.STRING)
     CURVE_MEMBERS = FieldName("Curve Members","Members constituting and index or curve", DataType.LIST)
     DATA_SOURCE = FieldName("Data Source", "Data vendor source", DataType.STRING)
+    DAY_CONVENTION = FieldName("Day Convention", "Bussiness day convention", DataType.DAY_CONVENTION)
+    DAY_CONVENTION_TERMINATION = FieldName("Day Convention Termination",
+                                           "Termination day convention", DataType.DAY_CONVENTION)
     DAYCOUNT = FieldName("Day Count", "Day count of a security", DataType.DAYCOUNT)
-    FIXING_DAYS = FieldName("Fixing Days", "Fixing days", DataType.INT)
+    END_OF_MONTH = FieldName("End Of Month", "End of month rule", DataType.BOOL)
+    FACE_AMOUNT = FieldName("Face Amount", "Face amount", DataType.FLOAT)
     ISSUE_DATE = FieldName("Issue Date", "Date of issuance of a security", DataType.DATE)
     INSTANCE = FieldName("Instance", "Dictionary instance", DataType.INSTANCE)
     MATURITY_DATE = FieldName("Maturity Date", "Maturity date of a security", DataType.DATE)
@@ -51,4 +58,5 @@ class Field(object):
     SECURITY_ID = FieldName("Security Id", "Security identifier", DataType.STRING)
     SECURITY_TYPE = FieldName("Security Type", "Security Type", DataType.STRING)
     SECURITY_SUBTYPE = FieldName("Security Subtype", "Security Subtype", DataType.STRING)
+    SETTLEMENT_DAYS = FieldName("Settlement Days", "Settlement days", DataType.INT)
     TICKER = FieldName("Ticker", "Ticker identifier for a security", DataType.STRING)

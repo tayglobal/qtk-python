@@ -25,7 +25,7 @@ class SecuritySubTypeName(Name):
         super(SecuritySubTypeName, self).__init__(security_subtype, type_id)
 
 
-class InstrumentName(Name):
+class InstrumentName(Name, Instance):
     _id_map = {}
 
     def __init__(self, instrument_name, asset_type, security_type, security_subtype):
@@ -34,6 +34,7 @@ class InstrumentName(Name):
         self._security_subtype = security_subtype
         inst_id = "%s.%s.%s" %(security_type.id, security_subtype.id, self.toid(instrument_name))
         super(InstrumentName, self).__init__(instrument_name, inst_id, True)
+        Instance.__init__(self, "Instrument")
 
     @property
     def asset_type(self):
@@ -60,10 +61,11 @@ class SecurityType(object):
 
 class SecuritySubType(object):
     BOND = SecuritySubTypeName("Bond")
+    ZCB = SecuritySubTypeName("ZCB")  # Zero coupon bond
 
 
-class Instrument(Instance):
-    US_TBILL = InstrumentName("US Treasury Bill", Asset.FIXED_INCOME, SecurityType.GOVERNMENT, SecuritySubType.BOND)
+class Instrument(object):
+    US_TBILL = InstrumentName("US Treasury Bill", Asset.FIXED_INCOME, SecurityType.GOVERNMENT, SecuritySubType.ZCB)
     US_TNOTE = InstrumentName("US Treasury Note", Asset.FIXED_INCOME, SecurityType.GOVERNMENT, SecuritySubType.BOND)
     US_TBOND = InstrumentName("US Treasury Bond", Asset.FIXED_INCOME, SecurityType.GOVERNMENT, SecuritySubType.BOND)
 

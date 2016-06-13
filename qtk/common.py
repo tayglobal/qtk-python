@@ -1,5 +1,32 @@
 
 
+class Instance(object):
+    _inst_map = {}
+    def __init__(self, name):
+        self._instance_name = name
+        self._iid = Name.toid(name)
+        self._inst_map[name] = self.__class__
+
+    @property
+    def instance_name(self):
+        return self._instance_name
+
+    @property
+    def iid(self):
+        """
+        Get instance id
+        :return: Instance id
+        """
+        return self._iid
+
+    @classmethod
+    def lookup_instance(cls, field_id):
+        c_name = field_id.split(".")[0]
+        c = cls._inst_map[c_name]
+        return getattr(c, "lookup")(field_id)
+
+
+
 class Name(object):
 
     def __init__(self, name, name_id, add_prefix=False):
@@ -12,7 +39,7 @@ class Name(object):
         return self._name
 
     def __repr__(self):
-        return str(self.__class__)+"."+self._id
+        return self._id
 
     @property
     def name(self):
@@ -31,5 +58,14 @@ class Name(object):
         return cls._id_map[field_id]
 
 
-class Instance(object):
-    pass
+class CheckedDataFieldGetter(object):
+
+    def __init__(self, data, conventions=None):
+        from .fields import Field as fl
+        self._instance_id = data[fl.INSTANCE.id],
+        self._conventions = {} if conventions is None else conventions
+        self._data = data
+        # self._global_conventions =
+
+    def get(self, field, default_value=None):
+        return self._data.get(field.id, self._conventions.get(field.id, default_value))
