@@ -11,6 +11,7 @@ __field_list_pair = [
     ("DAY_CNT_DES", fl.DAYCOUNT),
     ("ISSUE_DT", fl.ISSUE_DATE),
     ("MATURITY", fl.MATURITY_DATE),
+    ("date", fl.ASOF_DATE),
     ("PX_LAST", fl.PRICE_LAST),
     ("SECURITY_TYP", fl.SECURITY_TYPE),
     ("SECURITY_TYP2", fl.SECURITY_SUBTYPE)

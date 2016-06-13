@@ -42,6 +42,7 @@ class Field(object):
     CURVE_MEMBERS = FieldName("Curve Members","Members constituting and index or curve", DataType.LIST)
     DATA_SOURCE = FieldName("Data Source", "Data vendor source", DataType.STRING)
     DAYCOUNT = FieldName("Day Count", "Day count of a security", DataType.DAYCOUNT)
+    FIXING_DAYS = FieldName("Fixing Days", "Fixing days", DataType.INT)
     ISSUE_DATE = FieldName("Issue Date", "Date of issuance of a security", DataType.DATE)
     INSTANCE = FieldName("Instance", "Dictionary instance", DataType.INSTANCE)
     MATURITY_DATE = FieldName("Maturity Date", "Maturity date of a security", DataType.DATE)

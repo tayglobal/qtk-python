@@ -126,5 +126,6 @@ class IRCurveData(object):
                 data_dict = curve_members[seq_no]
                 assert(security == data_dict[fl.SECURITY_ID.id])
 
-                key, val = fmt(field_data, "PX_LAST")
-                data_dict[key.id] = val
+                for f in ["PX_LAST", "date"]:
+                    key, val = fmt(field_data, f)
+                    data_dict[key.id] = val
