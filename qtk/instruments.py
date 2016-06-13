@@ -1,4 +1,4 @@
-from .common import Name
+from .common import Name, Instance
 
 
 class AssetName(Name):
@@ -33,7 +33,7 @@ class InstrumentName(Name):
         self._security_type = security_type
         self._security_subtype = security_subtype
         inst_id = "%s.%s.%s" %(security_type.id, security_subtype.id, self.toid(instrument_name))
-        super(InstrumentName, self).__init__(instrument_name, inst_id)
+        super(InstrumentName, self).__init__(instrument_name, inst_id, True)
 
     @property
     def asset_type(self):
@@ -59,11 +59,10 @@ class SecurityType(object):
 
 
 class SecuritySubType(object):
-
     BOND = SecuritySubTypeName("Bond")
 
 
-class Instrument(object):
+class Instrument(Instance):
     US_TBILL = InstrumentName("US Treasury Bill", Asset.FIXED_INCOME, SecurityType.GOVERNMENT, SecuritySubType.BOND)
     US_TNOTE = InstrumentName("US Treasury Note", Asset.FIXED_INCOME, SecurityType.GOVERNMENT, SecuritySubType.BOND)
     US_TBOND = InstrumentName("US Treasury Bond", Asset.FIXED_INCOME, SecurityType.GOVERNMENT, SecuritySubType.BOND)

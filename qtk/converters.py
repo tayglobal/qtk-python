@@ -97,6 +97,8 @@ class QuantLibFactory(object):
             year, rest = divmod(date, 10000)
             month, day = divmod(rest, 100)
             ql_date = ql.Date(day, month, year)
+        elif isinstance(date, ql.Date):
+            ql_date = date
         else:
             raise ValueError("Unrecognized date format")
         return ql_date
@@ -108,12 +110,29 @@ class QuantLibFactory(object):
         elif isinstance(date, str):
             d = parse(date)
             yyyymmdd = d.year*10000 + d.month*100 + d.day
+        elif isinstance(date, ql.Date):
+            yyyymmdd = date.year()*10000 + date.month()*100 + date.dayOfMonth()
         elif isinstance(date, int):
             yyyymmdd = date
         else:
             raise ValueError("Unrecognized date format")
         return yyyymmdd
 
+    @classmethod
+    def to_date_py(cls, date):
+        if isinstance(date, str):
+            date_py = parse(date).date()
+        elif isinstance(date, datetime.date) or isinstance(date, datetime.datetime):
+            date_py = date
+        elif isinstance(date, ql.Date):
+            date_py = datetime.date(date.year(), date.month(),date.dayOfMonth())
+        elif isinstance(date, int):
+            year, rest = divmod(date, 10000)
+            month, day = divmod(rest, 100)
+            date_py = datetime.date(year, month, day)
+        else:
+            raise ValueError("Unrecognized date format")
+        return date_py
 
     @classmethod
     def to_day_convention(cls, day_convention):

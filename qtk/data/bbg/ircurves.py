@@ -4,9 +4,10 @@ This file handles Interest Rate Curves
 import blpapi
 
 from .defs import BLP_SECURITY_DATA, BLP_FIELD_DATA, BLP_CURVE_MEMBERS, BLP_SECURITY
-from .mapper import fmt
+from .mapper import fmt, get_instrument
 from qtk.fields import Field as fl
 from qtk.converters import QuantLibFactory as qlf
+from qtk.collections import Collection as cln
 
 
 class IRCurveData(object):
@@ -19,12 +20,18 @@ class IRCurveData(object):
 
     def get_curve_members(self, index_ticker, curve_date):
         bbg_date = qlf.to_date_yyyymmdd(curve_date)
+
+        # make all the required requests
         request_handler = self._get_ircurve_members_request_handler(index_ticker, bbg_date)
         output = self._blp.send_request(request_handler, self._ircurve_members_event_handler)
         request_handler = self._get_ircurve_member_data_request_handler(output[fl.CURVE_MEMBERS.id])
         output = self._blp.send_request(request_handler, self._ircurve_members_data_event_handler, output=output)
+        request_handler = self._get_hist_price_request_handler(output[fl.CURVE_MEMBERS.id], bbg_date)
+        output = self._blp.send_request(request_handler, self._hist_price_event_handler, output=output)
+
         output[fl.ASOF_DATE.id] = curve_date
         output[fl.DATA_SOURCE.id] = "BBG-BLPAPI"
+        output[fl.INSTANCE.id] = cln.CURVE_MEMBERS.id
         return output
 
     @staticmethod
@@ -86,3 +93,38 @@ class IRCurveData(object):
                     for f in cls._CURVE_MEMBER_DATA0:
                         key, val = fmt(field_data, f)
                         data_dict[key.id] = val
+                    key, asset_type = fmt(field_data, "BPIPE_REFERENCE_SECURITY_CLASS")
+                    key, security_type = fmt(field_data, "SECURITY_TYP")
+                    key, security_subtype = fmt(field_data, "SECURITY_TYP2")
+                    instrument = get_instrument(asset_type, security_type, security_subtype)
+                    data_dict[fl.INSTANCE.id] = instrument.id
+
+
+    @classmethod
+    def _get_hist_price_request_handler(cls, curve_members, curve_date):
+        def request_handler(session):
+            refservice = session.getService("//blp/refdata")
+            request = refservice.createRequest("HistoricalDataRequest")
+            for c in curve_members:
+                request.append("securities", c[fl.SECURITY_ID.id])
+            request.set("startDate", curve_date)
+            request.set("endDate", curve_date)
+            request.append("fields", "PX_LAST")
+            return request
+        return request_handler
+
+    @classmethod
+    def _hist_price_event_handler(cls, event, output):
+        event_type = event.eventType()
+        curve_members = output[fl.CURVE_MEMBERS.id]
+        if (event_type == blpapi.Event.RESPONSE) or (event_type == blpapi.Event.PARTIAL_RESPONSE):
+            for i,msg in enumerate(event):
+                security_data = msg.getElement(BLP_SECURITY_DATA)
+                security = security_data.getElementAsString(BLP_SECURITY)
+                field_data = security_data.getElement(BLP_FIELD_DATA).getValueAsElement(0)
+                seq_no = security_data.getElementAsInteger("sequenceNumber")
+                data_dict = curve_members[seq_no]
+                assert(security == data_dict[fl.SECURITY_ID.id])
+
+                key, val = fmt(field_data, "PX_LAST")
+                data_dict[key.id] = val

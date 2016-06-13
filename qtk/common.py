@@ -2,8 +2,9 @@
 
 class Name(object):
 
-    def __init__(self, name, name_id):
-        self._id = name_id
+    def __init__(self, name, name_id, add_prefix=False):
+        prefix = self.__class__.__name__.rstrip("Name")+"." if add_prefix else ""
+        self._id = prefix+name_id
         self._name = name
         self._id_map[self._id] = self
 
@@ -28,3 +29,7 @@ class Name(object):
     @classmethod
     def lookup(cls, field_id):
         return cls._id_map[field_id]
+
+
+class Instance(object):
+    pass

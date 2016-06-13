@@ -1,7 +1,7 @@
 from blpapi.exception import NotFoundException
-
 from qtk.fields import Field as fl
 from qtk.fields import DataType as dt
+from qtk.converters import QuantLibFactory as qlf
 from qtk.instruments import Instrument as inst
 
 __field_list_pair = [
@@ -49,7 +49,9 @@ def fmt(e, f):
         return ele.getElementAsString(field)
 
     def _to_date(ele, field):
-        return ele.getElementAsString(field)
+        date = ele.getElementAsString(field)
+        date_py = qlf.to_date_py(date)
+        return date_py
 
     def _to_freq(ele, field):
         return ele.getElementAsInteger(field)
@@ -72,5 +74,13 @@ def fmt(e, f):
     return key, val
 
 
-def instrument_mapper(asset_type, security_type, security_subtype):
-    pass
+def get_instrument(asset_type, security_type, security_subtype):
+    _instrument_map = {
+        "USGOVERNMENT.BILL": inst.US_TBILL,
+        "USGOVERNMENT.NOTE": inst.US_TNOTE,
+        "USGOVERNMENT.BOND": inst.US_TBOND,
+    }
+
+    key_members = [security_type, security_subtype]
+    key = ".".join([k.upper().replace(" ", "") for k in key_members])
+    return _instrument_map[key]
