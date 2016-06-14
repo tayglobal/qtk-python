@@ -16,12 +16,12 @@ class DataType(object):
     CALENDAR = 15
 
 
-class FieldName(Name):
+class Field(Name):
     _id_map = {}
 
     def __init__(self, name, desc, data_type):
         field_id = self.toid(name)
-        super(FieldName, self).__init__(name, field_id)
+        super(Field, self).__init__(name, field_id)
         self._desc = desc
         self._data_type = data_type
 
@@ -33,30 +33,30 @@ class FieldName(Name):
         return self._data_type
 
 
-class Field(object):
+class FieldList(object):
     # In alphabetical order
-    ASOF_DATE = FieldName("As Of Date", "Reference date or as of date", DataType.DATE)
-    ASSET_CLASS = FieldName("Asset Class", "Asset class of a security", DataType.STRING)
-    CALENDAR = FieldName("Calendar", "Calendar", DataType.CALENDAR)
-    CONVENTIONS = FieldName("Conventions", "Conventions for instruments, models or indices", DataType.DICT)
-    COUPON = FieldName("Coupon", "Coupon of a bond in % units", DataType.FLOAT)
-    COUPON_FREQ = FieldName("Coupon Frequency", "Coupon frequency of a bond", DataType.FREQUENCY)
-    CURRENCY = FieldName("Currency", "Currency", DataType.STRING)
-    CURVE_MEMBERS = FieldName("Curve Members","Members constituting and index or curve", DataType.LIST)
-    DATA_SOURCE = FieldName("Data Source", "Data vendor source", DataType.STRING)
-    DAY_CONVENTION = FieldName("Day Convention", "Bussiness day convention", DataType.DAY_CONVENTION)
-    DAY_CONVENTION_TERMINATION = FieldName("Day Convention Termination",
+    ASOF_DATE = Field("As Of Date", "Reference date or as of date", DataType.DATE)
+    ASSET_CLASS = Field("Asset Class", "Asset class of a security", DataType.STRING)
+    CALENDAR = Field("Calendar", "Calendar", DataType.CALENDAR)
+    CONVENTIONS = Field("Conventions", "Conventions for instruments, models or indices", DataType.DICT)
+    COUPON = Field("Coupon", "Coupon of a bond in % units", DataType.FLOAT)
+    COUPON_FREQ = Field("Coupon Frequency", "Coupon frequency of a bond", DataType.FREQUENCY)
+    CURRENCY = Field("Currency", "Currency", DataType.STRING)
+    CURVE_MEMBERS = Field("Curve Members","Members constituting and index or curve", DataType.LIST)
+    DATA_SOURCE = Field("Data Source", "Data vendor source", DataType.STRING)
+    DAY_CONVENTION = Field("Day Convention", "Bussiness day convention", DataType.DAY_CONVENTION)
+    DAY_CONVENTION_TERMINATION = Field("Day Convention Termination",
                                            "Termination day convention", DataType.DAY_CONVENTION)
-    DAYCOUNT = FieldName("Day Count", "Day count of a security", DataType.DAYCOUNT)
-    END_OF_MONTH = FieldName("End Of Month", "End of month rule", DataType.BOOL)
-    FACE_AMOUNT = FieldName("Face Amount", "Face amount", DataType.FLOAT)
-    ISSUE_DATE = FieldName("Issue Date", "Date of issuance of a security", DataType.DATE)
-    INSTANCE = FieldName("Instance", "Dictionary instance", DataType.INSTANCE)
-    MATURITY_DATE = FieldName("Maturity Date", "Maturity date of a security", DataType.DATE)
-    PRICE_LAST = FieldName("Price Last", "Last price of a security", DataType.FLOAT)
-    SECURITY_DATA = FieldName("Security Data", "Security refernce data", DataType.DICT)
-    SECURITY_ID = FieldName("Security Id", "Security identifier", DataType.STRING)
-    SECURITY_TYPE = FieldName("Security Type", "Security Type", DataType.STRING)
-    SECURITY_SUBTYPE = FieldName("Security Subtype", "Security Subtype", DataType.STRING)
-    SETTLEMENT_DAYS = FieldName("Settlement Days", "Settlement days", DataType.INT)
-    TICKER = FieldName("Ticker", "Ticker identifier for a security", DataType.STRING)
+    DAYCOUNT = Field("Day Count", "Day count of a security", DataType.DAYCOUNT)
+    END_OF_MONTH = Field("End Of Month", "End of month rule", DataType.BOOL)
+    FACE_AMOUNT = Field("Face Amount", "Face amount", DataType.FLOAT)
+    ISSUE_DATE = Field("Issue Date", "Date of issuance of a security", DataType.DATE)
+    INSTANCE = Field("Instance", "Dictionary instance", DataType.INSTANCE)
+    MATURITY_DATE = Field("Maturity Date", "Maturity date of a security", DataType.DATE)
+    PRICE_LAST = Field("Price Last", "Last price of a security", DataType.FLOAT)
+    SECURITY_DATA = Field("Security Data", "Security refernce data", DataType.DICT)
+    SECURITY_ID = Field("Security Id", "Security identifier", DataType.STRING)
+    SECURITY_TYPE = Field("Security Type", "Security Type", DataType.STRING)
+    SECURITY_SUBTYPE = Field("Security Subtype", "Security Subtype", DataType.STRING)
+    SETTLEMENT_DAYS = Field("Settlement Days", "Settlement days", DataType.INT)
+    TICKER = Field("Ticker", "Ticker identifier for a security", DataType.STRING)

@@ -1,7 +1,7 @@
-from .fields import Field as fl
+from .fields import FieldList as fl
 import QuantLib as ql
 from .common import CheckedDataFieldGetter, Instance
-from .instruments import InstrumentName, SecuritySubType
+from .instruments import Instrument, SecuritySubTypeList
 from .converters import QuantLibFactory as qlf
 
 class ScheduleCreator(object):
@@ -103,10 +103,10 @@ class BondYieldCurveCreator(object):
             instance = dfg.get(fl.INSTANCE)
             loc_asof_date = dfg.get(fl.ASOF_DATE, asof_date)
 
-            if isinstance(instance, InstrumentName) and (instance.security_subtype == SecuritySubType.ZCB):
+            if isinstance(instance, Instrument) and (instance.security_subtype == SecuritySubTypeList.ZCB):
                 depo_rate_helper = DepositRateHelperCreator.create(c, loc_asof_date, conventions)
                 rate_helpers.append(depo_rate_helper)
-            elif isinstance(instance, InstrumentName) and (instance.security_subtype == SecuritySubType.BOND):
+            elif isinstance(instance, Instrument) and (instance.security_subtype == SecuritySubTypeList.BOND):
                 bond_rate_helper = BondRateHelperCreator.create(c, loc_asof_date, conventions)
                 rate_helpers.append(bond_rate_helper)
 

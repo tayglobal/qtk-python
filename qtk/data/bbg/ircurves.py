@@ -5,9 +5,9 @@ import blpapi
 
 from .defs import BLP_SECURITY_DATA, BLP_FIELD_DATA, BLP_CURVE_MEMBERS, BLP_SECURITY
 from .mapper import fmt, get_instrument
-from qtk.fields import Field as fl
+from qtk.fields import FieldList as fl
 from qtk.converters import QuantLibFactory as qlf
-from qtk.collections import Collection as cln
+from qtk.collections import CollectionList as cln
 
 
 class IRCurveData(object):

@@ -2,10 +2,11 @@
 
 class Instance(object):
     _inst_map = {}
-    def __init__(self, name):
-        self._instance_name = name
-        self._iid = Name.toid(name)
-        self._inst_map[name] = self.__class__
+
+    def __init__(self):
+        self._instance_name = self.__class__.__name__
+        self._iid = Name.toid(self._instance_name)
+        self._inst_map[self._instance_name] = self.__class__
 
     @property
     def instance_name(self):
@@ -26,11 +27,10 @@ class Instance(object):
         return getattr(c, "lookup")(field_id)
 
 
-
 class Name(object):
 
-    def __init__(self, name, name_id, add_prefix=False):
-        prefix = self.__class__.__name__.rstrip("Name")+"." if add_prefix else ""
+    def __init__(self, name, name_id, is_instance=False):
+        prefix = self.__class__.__name__+"." if is_instance else ""
         self._id = prefix+name_id
         self._name = name
         self._id_map[self._id] = self
@@ -61,7 +61,7 @@ class Name(object):
 class CheckedDataFieldGetter(object):
 
     def __init__(self, data, conventions=None):
-        from .fields import Field as fl
+        from .fields import FieldList as fl
         self._instance_id = data[fl.INSTANCE.id],
         self._conventions = {} if conventions is None else conventions
         self._data = data

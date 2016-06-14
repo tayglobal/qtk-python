@@ -1,15 +1,16 @@
 from .common import Name, Instance
 
 
-class CollectionName(Name, Instance):
+class Collection(Name, Instance):
     _id_map = {}
 
     def __init__(self, name):
         collection_id = self.toid(name)
-        super(CollectionName, self).__init__(name, collection_id, True)
-        Instance.__init__(self, "Collection")
+        super(Collection, self).__init__(name, collection_id, True)
+        Instance.__init__(self)
 
-class Collection(object):
-    SECURITIES = CollectionName("Securities")
-    CURVE_MEMBERS = CollectionName("Curve Members")
+
+class CollectionList(object):
+    SECURITIES = Collection("Securities")
+    CURVE_MEMBERS = Collection("Curve Members")
 

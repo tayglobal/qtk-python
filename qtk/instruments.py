@@ -9,23 +9,23 @@ class AssetName(Name):
         super(AssetName, self).__init__(asset_name, asset_id)
 
 
-class SecurityTypeName(Name):
+class SecurityType(Name):
     _id_map = {}
 
     def __init__(self, security_type):
         type_id = self.toid(security_type)
-        super(SecurityTypeName, self).__init__(security_type, type_id)
+        super(SecurityType, self).__init__(security_type, type_id)
 
 
-class SecuritySubTypeName(Name):
+class SecuritySubType(Name):
     _id_map = {}
 
     def __init__(self, security_subtype):
         type_id = self.toid(security_subtype)
-        super(SecuritySubTypeName, self).__init__(security_subtype, type_id)
+        super(SecuritySubType, self).__init__(security_subtype, type_id)
 
 
-class InstrumentName(Name, Instance):
+class Instrument(Name, Instance):
     _id_map = {}
 
     def __init__(self, instrument_name, asset_type, security_type, security_subtype):
@@ -33,8 +33,8 @@ class InstrumentName(Name, Instance):
         self._security_type = security_type
         self._security_subtype = security_subtype
         inst_id = "%s.%s.%s" %(security_type.id, security_subtype.id, self.toid(instrument_name))
-        super(InstrumentName, self).__init__(instrument_name, inst_id, True)
-        Instance.__init__(self, "Instrument")
+        super(Instrument, self).__init__(instrument_name, inst_id, True)
+        Instance.__init__(self)
 
     @property
     def asset_type(self):
@@ -54,19 +54,19 @@ class Asset(object):
     EQUITY = AssetName("Equity")
 
 
-class SecurityType(object):
-    GOVERNMENT = SecurityTypeName("Government")
-    CORPORATE = SecurityTypeName("Corporate")
+class SecurityTypeList(object):
+    GOVERNMENT = SecurityType("Government")
+    CORPORATE = SecurityType("Corporate")
 
 
-class SecuritySubType(object):
-    BOND = SecuritySubTypeName("Bond")
-    ZCB = SecuritySubTypeName("ZCB")  # Zero coupon bond
+class SecuritySubTypeList(object):
+    BOND = SecuritySubType("Bond")
+    ZCB = SecuritySubType("ZCB")  # Zero coupon bond
 
 
-class Instrument(object):
-    US_TBILL = InstrumentName("US Treasury Bill", Asset.FIXED_INCOME, SecurityType.GOVERNMENT, SecuritySubType.ZCB)
-    US_TNOTE = InstrumentName("US Treasury Note", Asset.FIXED_INCOME, SecurityType.GOVERNMENT, SecuritySubType.BOND)
-    US_TBOND = InstrumentName("US Treasury Bond", Asset.FIXED_INCOME, SecurityType.GOVERNMENT, SecuritySubType.BOND)
+class InstrumentList(object):
+    US_TBILL = Instrument("US Treasury Bill", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT, SecuritySubTypeList.ZCB)
+    US_TNOTE = Instrument("US Treasury Note", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT, SecuritySubTypeList.BOND)
+    US_TBOND = Instrument("US Treasury Bond", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT, SecuritySubTypeList.BOND)
 
 

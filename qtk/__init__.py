@@ -1,7 +1,7 @@
-from .instruments import Instrument
-from .fields import Field
+from .instruments import InstrumentList
+from .fields import FieldList
 from .converters import QuantLibFactory
-from .collections import Collection
+from .collections import CollectionList
 from .common import Instance
 
 __author__ = 'Goutham Balaraman'
