@@ -1,8 +1,7 @@
-from .instruments import InstrumentList
+from .templates import Template
 from .fields import FieldList
-from .converters import QuantLibFactory
-from .collections import CollectionList
-from .common import Instance
+from .converters import QuantLibConverter
+from .common import TemplateBase
 
 __author__ = 'Goutham Balaraman'
 __version__ = '0.0.0'

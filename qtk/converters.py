@@ -1,9 +1,10 @@
 import QuantLib as ql
 import datetime
 from dateutil.parser import parse
-from common import Instance
+from common import TemplateBase
 
-class QuantLibFactory(object):
+
+class QuantLibConverter(object):
 
     _daycount_map = {
         "ACT/ACT": ql.ActualActual(),
@@ -135,10 +136,10 @@ class QuantLibFactory(object):
 
     @classmethod
     def to_instance(cls, instance):
-        if isinstance(instance, Instance):
+        if isinstance(instance, TemplateBase):
             return instance
         elif isinstance(instance, str):
-            return Instance.lookup_instance(instance)
+            return TemplateBase.lookup_instance(instance)
         else:
             raise ValueError("Unrecognized instance")
 

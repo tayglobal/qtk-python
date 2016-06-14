@@ -1,8 +1,8 @@
 from blpapi.exception import NotFoundException
 from qtk.fields import FieldList as fl
-from qtk.fields import DataType as dt
-from qtk.converters import QuantLibFactory as qlf
-from qtk.instruments import InstrumentList as inst
+from qtk.common import DataType as dt
+from qtk.converters import QuantLibConverter as qlf
+from qtk.templates import Template as inst
 
 __field_list_pair = [
     ("BPIPE_REFERENCE_SECURITY_CLASS", fl.ASSET_CLASS),

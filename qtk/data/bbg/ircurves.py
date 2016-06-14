@@ -6,8 +6,8 @@ import blpapi
 from .defs import BLP_SECURITY_DATA, BLP_FIELD_DATA, BLP_CURVE_MEMBERS, BLP_SECURITY
 from .mapper import fmt, get_instrument
 from qtk.fields import FieldList as fl
-from qtk.converters import QuantLibFactory as qlf
-from qtk.collections import CollectionList as cln
+from qtk.converters import QuantLibConverter as qlf
+from qtk import Template
 
 
 class IRCurveData(object):
@@ -24,14 +24,14 @@ class IRCurveData(object):
         # make all the required requests
         request_handler = self._get_ircurve_members_request_handler(index_ticker, bbg_date)
         output = self._blp.send_request(request_handler, self._ircurve_members_event_handler)
-        request_handler = self._get_ircurve_member_data_request_handler(output[fl.CURVE_MEMBERS.id])
+        request_handler = self._get_ircurve_member_data_request_handler(output[fl.INSTRUMENT_COLLECTION.id])
         output = self._blp.send_request(request_handler, self._ircurve_members_data_event_handler, output=output)
-        request_handler = self._get_hist_price_request_handler(output[fl.CURVE_MEMBERS.id], bbg_date)
+        request_handler = self._get_hist_price_request_handler(output[fl.INSTRUMENT_COLLECTION.id], bbg_date)
         output = self._blp.send_request(request_handler, self._hist_price_event_handler, output=output)
 
         output[fl.ASOF_DATE.id] = curve_date
         output[fl.DATA_SOURCE.id] = "BBG-BLPAPI"
-        output[fl.INSTANCE.id] = cln.CURVE_MEMBERS
+        output[fl.TEMPLATE.id] = Template.BOOTSTRAP_INSTRUMENTS.id
         return output
 
     @staticmethod
@@ -59,7 +59,7 @@ class IRCurveData(object):
 
                 member_tickers = [{fl.SECURITY_ID.id: curve_members.getValueAsElement(i).getElementAsString("Curve Members")}
                                   for i in range(curve_members.numValues())]
-                output[fl.CURVE_MEMBERS.id] = member_tickers
+                output[fl.INSTRUMENT_COLLECTION.id] = member_tickers
 
     @classmethod
     def _get_ircurve_member_data_request_handler(cls, curve_members):
@@ -78,7 +78,7 @@ class IRCurveData(object):
     @classmethod
     def _ircurve_members_data_event_handler(cls, event, output):
         event_type = event.eventType()
-        curve_members = output[fl.CURVE_MEMBERS.id]
+        curve_members = output[fl.INSTRUMENT_COLLECTION.id]
         if (event_type == blpapi.Event.RESPONSE) or (event_type == blpapi.Event.PARTIAL_RESPONSE):
             for msg in event:
                 security_data = msg.getElement(BLP_SECURITY_DATA)
@@ -97,7 +97,7 @@ class IRCurveData(object):
                     key, security_type = fmt(field_data, "SECURITY_TYP")
                     key, security_subtype = fmt(field_data, "SECURITY_TYP2")
                     instrument = get_instrument(asset_type, security_type, security_subtype)
-                    data_dict[fl.INSTANCE.id] = instrument
+                    data_dict[fl.TEMPLATE.id] = instrument
 
 
     @classmethod
@@ -116,7 +116,7 @@ class IRCurveData(object):
     @classmethod
     def _hist_price_event_handler(cls, event, output):
         event_type = event.eventType()
-        curve_members = output[fl.CURVE_MEMBERS.id]
+        curve_members = output[fl.INSTRUMENT_COLLECTION.id]
         if (event_type == blpapi.Event.RESPONSE) or (event_type == blpapi.Event.PARTIAL_RESPONSE):
             for i,msg in enumerate(event):
                 security_data = msg.getElement(BLP_SECURITY_DATA)

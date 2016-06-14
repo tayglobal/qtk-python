@@ -1,8 +1,9 @@
 from .fields import FieldList as fl
 import QuantLib as ql
-from .common import CheckedDataFieldGetter, Instance
-from .instruments import Instrument, SecuritySubTypeList
-from .converters import QuantLibFactory as qlf
+from .common import CheckedDataFieldGetter, TemplateBase
+from .templates import SecuritySubTypeList
+from qtk.common import Instrument, SecuritySubTypeList
+from .converters import QuantLibConverter as qlf
 
 class ScheduleCreator(object):
 
@@ -94,13 +95,13 @@ class BondRateHelperCreator(object):
 class BondYieldCurveCreator(object):
     @staticmethod
     def create(data, asof_date, conventions=None):
-        curve_members = data[fl.CURVE_MEMBERS.id]
+        curve_members = data[fl.INSTRUMENT_COLLECTION.id]
         conventions = data.get(fl.CONVENTIONS.id, conventions)
         rate_helpers = []
         for c in curve_members:
             loc_conventions = conventions or c.get(fl.CONVENTIONS.id)
             dfg = CheckedDataFieldGetter(c, loc_conventions)
-            instance = dfg.get(fl.INSTANCE)
+            instance = dfg.get(fl.TEMPLATE)
             loc_asof_date = dfg.get(fl.ASOF_DATE, asof_date)
 
             if isinstance(instance, Instrument) and (instance.security_subtype == SecuritySubTypeList.ZCB):
