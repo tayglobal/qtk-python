@@ -2,7 +2,7 @@ from .fields import Field as fl
 import QuantLib as ql
 from .common import CheckedDataFieldGetter, Instance
 from .instruments import InstrumentName, SecuritySubType
-
+from .converters import QuantLibFactory as qlf
 
 class ScheduleCreator(object):
 
@@ -11,15 +11,17 @@ class ScheduleCreator(object):
         dfg = CheckedDataFieldGetter(data, convention)
 
         maturity_date = dfg.get(fl.MATURITY_DATE)
+        asof_date = asof_date
         coupon_freq = dfg.get(fl.COUPON_FREQ)
-        calendar = dfg.get(fl.CALENDAR, ql.UnitedStates()),
+        period = ql.Period(coupon_freq)
+        calendar = dfg.get(fl.CALENDAR, ql.UnitedStates())
         convention = dfg.get(fl.DAY_CONVENTION, ql.Following)
         termination_convention = dfg.get(fl.DAY_CONVENTION_TERMINATION, convention)
         end_of_month = dfg.get(fl.END_OF_MONTH, True)
 
         schedule = ql.Schedule(asof_date,
                                maturity_date,
-                               coupon_freq,
+                               period,
                                calendar,
                                convention,
                                termination_convention,
@@ -55,14 +57,20 @@ class DepositRateHelperCreator(object):
 
     @classmethod
     def _to_tenor(cls, start_date, end_date):
+
         time_delta = end_date - start_date
-        temp = 365./time_delta.days
-        return round(temp)  # very ugly!!!
+        _days = [1, 7, 14, 30, 60, 90, 180, 360]
+        _tenor = [ql.Period(1, ql.Days), ql.Period(1, ql.Weeks),
+                 ql.Period(2, ql.Weeks), ql.Period(1, ql.Months),
+                 ql.Period(2, ql.Months), ql.Period(3, ql.Months),
+                 ql.Period(6, ql.Months), ql.Period(1, ql.Years)]
+        i, x = min(enumerate(_days), key=lambda x: abs(x[1]-time_delta))
+        return _tenor[i]
 
 
 class BondRateHelperCreator(object):
     @staticmethod
-    def create(self, data, asof_date, convention=None):
+    def create(data, asof_date, convention=None):
         dfg = CheckedDataFieldGetter(data, convention)
         schedule = ScheduleCreator.create(data, asof_date, convention)
         face_amount = dfg.get(fl.FACE_AMOUNT, 100.0)
@@ -104,7 +112,7 @@ class BondYieldCurveCreator(object):
 
         day_count = ql.Actual360()
 
-        yc_curve = ql.PiecewiseLogCubicDiscount(
+        yc_curve = ql.PiecewiseCubicZero(
             asof_date,
             rate_helpers,
             day_count

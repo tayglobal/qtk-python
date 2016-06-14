@@ -52,7 +52,7 @@ def fmt(e, f):
 
     def _to_date(ele, field):
         date = ele.getElementAsString(field)
-        date_py = qlf.to_date_py(date)
+        date_py = qlf.to_date(date)
         return date_py
 
     def _to_freq(ele, field):
