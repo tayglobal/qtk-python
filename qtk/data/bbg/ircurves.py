@@ -109,7 +109,7 @@ class IRCurveData(object):
                 request.append("securities", c[fl.SECURITY_ID.id])
             request.set("startDate", curve_date)
             request.set("endDate", curve_date)
-            request.append("fields", "PX_LAST")
+            request.append("fields", "PX_MID")
             return request
         return request_handler
 
@@ -126,6 +126,6 @@ class IRCurveData(object):
                 data_dict = curve_members[seq_no]
                 assert(security == data_dict[fl.SECURITY_ID.id])
 
-                for f in ["PX_LAST", "date"]:
+                for f in ["PX_MID", "date"]:
                     key, val = fmt(field_data, f)
                     data_dict[key.id] = val

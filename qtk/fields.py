@@ -22,6 +22,7 @@ class FieldList(object):
 
     MATURITY_DATE = Field("Maturity Date", "Maturity date of a security", DataType.DATE)
     PRICE_LAST = Field("Price Last", "Last price of a security", DataType.FLOAT)
+    PRICE_MID = Field("Price Mid", "Mid price of a security", DataType.FLOAT)
     SECURITY_DATA = Field("Security Data", "Security refernce data", DataType.DICT)
     SECURITY_ID = Field("Security Id", "Security identifier", DataType.STRING)
     SECURITY_TYPE = Field("Security Type", "Security Type", DataType.STRING)

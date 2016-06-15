@@ -13,6 +13,7 @@ __field_list_pair = [
     ("MATURITY", fl.MATURITY_DATE),
     ("date", fl.ASOF_DATE),
     ("PX_LAST", fl.PRICE_LAST),
+    ("PX_MID", fl.PRICE_MID),
     ("SECURITY_TYP", fl.SECURITY_TYPE),
     ("SECURITY_TYP2", fl.SECURITY_SUBTYPE)
 ]

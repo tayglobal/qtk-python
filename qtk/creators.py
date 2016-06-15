@@ -5,6 +5,7 @@ from .templates import SecuritySubTypeList
 from qtk.common import Instrument, SecuritySubTypeList
 from .converters import QuantLibConverter as qlf
 
+
 class ScheduleCreator(object):
 
     @staticmethod
@@ -36,7 +37,7 @@ class DepositRateHelperCreator(object):
     @classmethod
     def create(cls, data, asof_date, convention=None):
         dfg = CheckedDataFieldGetter(data, convention)
-        rate = dfg.get(fl.PRICE_LAST)
+        rate = dfg.get(fl.PRICE_MID)
         maturity_date = dfg.get(fl.MATURITY_DATE)
         tenor = cls._to_tenor(asof_date, maturity_date)
         settlement_days = dfg.get(fl.SETTLEMENT_DAYS, 2)
@@ -78,7 +79,7 @@ class BondRateHelperCreator(object):
         settlement_days = dfg.get(fl.SETTLEMENT_DAYS, 2)
         day_count = dfg.get(fl.DAYCOUNT)
         convention = dfg.get(fl.DAY_CONVENTION, ql.Following)
-        price = dfg.get(fl.PRICE_LAST)
+        price = dfg.get(fl.PRICE_MID)
         coupon = dfg.get(fl.COUPON)
         bond_helper = ql.FixedRateBondHelper(
             ql.QuoteHandle(ql.SimpleQuote(price)),
@@ -113,7 +114,7 @@ class BondYieldCurveCreator(object):
 
         day_count = ql.Actual360()
 
-        yc_curve = ql.PiecewiseCubicZero(
+        yc_curve = ql.PiecewiseLinearZero(
             asof_date,
             rate_helpers,
             day_count
