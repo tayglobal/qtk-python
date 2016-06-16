@@ -13,7 +13,7 @@ __field_list_pair = [
     ("MATURITY", fl.MATURITY_DATE),
     ("date", fl.ASOF_DATE),
     ("PX_LAST", fl.PRICE_LAST),
-    ("PX_MID", fl.PRICE_MID),
+    ("PX_MID", fl.PRICE),
     ("SECURITY_TYP", fl.SECURITY_TYPE),
     ("SECURITY_TYP2", fl.SECURITY_SUBTYPE)
 ]
@@ -79,9 +79,9 @@ def fmt(e, f):
 
 def get_instrument(asset_type, security_type, security_subtype):
     _instrument_map = {
-        "USGOVERNMENT.BILL": inst.US_TBILL,
-        "USGOVERNMENT.NOTE": inst.US_TNOTE,
-        "USGOVERNMENT.BOND": inst.US_TBOND,
+        "USGOVERNMENT.BILL": inst.INST_US_TBILL,
+        "USGOVERNMENT.NOTE": inst.INST_US_TNOTE,
+        "USGOVERNMENT.BOND": inst.INST_US_TBOND,
     }
 
     key_members = [security_type, security_subtype]

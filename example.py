@@ -1,10 +1,11 @@
-from qtk.data.bbg.requesthandler import BlpapiRequestHandler
-from qtk.data.bbg.ircurves import IRCurveData
 import logging
 from pprint import pprint
-import QuantLib as ql
-from qtk.creators import BondYieldCurveCreator
 
+import QuantLib as ql
+
+from qtk.data.bbg.requesthandler import BlpapiRequestHandler
+from qtk.data.bbg.ircurves import IRCurveData
+from qtk.creators.termstructure import BondYieldCurveCreator
 
 consoleHandler = logging.StreamHandler()
 logger = logging.getLogger()

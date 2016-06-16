@@ -1,3 +1,4 @@
+import creators  # has to happen before templates
 from .templates import Template
 from .fields import FieldList
 from .converters import QuantLibConverter

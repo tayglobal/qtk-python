@@ -1,9 +1,9 @@
-from .fields import FieldList as fl
+from qtk.fields import FieldList as fl
 import QuantLib as ql
-from .common import CheckedDataFieldGetter, TemplateBase
-from .templates import SecuritySubTypeList
+from qtk.common import CheckedDataFieldGetter
 from qtk.common import Instrument, SecuritySubTypeList
-from .converters import QuantLibConverter as qlf
+from .common import CreatorBase
+from qtk.templates import Template
 
 
 class ScheduleCreator(object):
@@ -37,13 +37,15 @@ class DepositRateHelperCreator(object):
     @classmethod
     def create(cls, data, asof_date, convention=None):
         dfg = CheckedDataFieldGetter(data, convention)
-        rate = dfg.get(fl.PRICE_MID)
+        rate = dfg.get(fl.PRICE)
         maturity_date = dfg.get(fl.MATURITY_DATE)
-        tenor = cls._to_tenor(asof_date, maturity_date)
+
         settlement_days = dfg.get(fl.SETTLEMENT_DAYS, 2)
         day_count = dfg.get(fl.DAYCOUNT)
         convention = dfg.get(fl.DAY_CONVENTION, ql.Following)
         calendar = dfg.get(fl.CALENDAR, ql.UnitedStates())
+        days = day_count.dayCount(asof_date, maturity_date)
+        tenor = ql.Period(days, ql.Days)
         end_of_month = dfg.get(fl.END_OF_MONTH, True)
 
         depo_rate_helper = ql.DepositRateHelper(
@@ -57,18 +59,6 @@ class DepositRateHelperCreator(object):
         )
         return depo_rate_helper
 
-    @classmethod
-    def _to_tenor(cls, start_date, end_date):
-
-        time_delta = end_date - start_date
-        _days = [1, 7, 14, 30, 60, 90, 180, 360]
-        _tenor = [ql.Period(1, ql.Days), ql.Period(1, ql.Weeks),
-                 ql.Period(2, ql.Weeks), ql.Period(1, ql.Months),
-                 ql.Period(2, ql.Months), ql.Period(3, ql.Months),
-                 ql.Period(6, ql.Months), ql.Period(1, ql.Years)]
-        i, x = min(enumerate(_days), key=lambda x: abs(x[1]-time_delta))
-        return _tenor[i]
-
 
 class BondRateHelperCreator(object):
     @staticmethod
@@ -79,7 +69,7 @@ class BondRateHelperCreator(object):
         settlement_days = dfg.get(fl.SETTLEMENT_DAYS, 2)
         day_count = dfg.get(fl.DAYCOUNT)
         convention = dfg.get(fl.DAY_CONVENTION, ql.Following)
-        price = dfg.get(fl.PRICE_MID)
+        price = dfg.get(fl.PRICE)
         coupon = dfg.get(fl.COUPON)
         bond_helper = ql.FixedRateBondHelper(
             ql.QuoteHandle(ql.SimpleQuote(price)),
@@ -93,7 +83,12 @@ class BondRateHelperCreator(object):
         return bond_helper
 
 
-class BondYieldCurveCreator(object):
+class BondYieldCurveCreator(CreatorBase):
+
+    _templates = [Template.TS_YIELD_BOND]
+    _req_fields = []
+    _opt_fields = []
+
     @staticmethod
     def create(data, asof_date, conventions=None):
         curve_members = data[fl.INSTRUMENT_COLLECTION.id]

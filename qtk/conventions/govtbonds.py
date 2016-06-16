@@ -1,7 +1,7 @@
-from qtk.common import Name
+from qtk.common import NameBase
 
 
-class ConventionName(Name):
+class ConventionName(NameBase):
     _id_map = {}
 
     def __init__(self, instance):

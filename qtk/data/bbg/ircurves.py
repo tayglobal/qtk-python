@@ -31,7 +31,7 @@ class IRCurveData(object):
 
         output[fl.ASOF_DATE.id] = curve_date
         output[fl.DATA_SOURCE.id] = "BBG-BLPAPI"
-        output[fl.TEMPLATE.id] = Template.BOOTSTRAP_INSTRUMENTS.id
+        output[fl.TEMPLATE.id] = Template.COLN_INSTRUMENTS.id
         return output
 
     @staticmethod
