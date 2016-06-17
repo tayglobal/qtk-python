@@ -10,7 +10,7 @@ class Field(object):
     COUPON = FieldName("Coupon", "Coupon of a bond in % units", DataType.FLOAT)
     COUPON_FREQ = FieldName("Coupon Frequency", "Coupon frequency of a bond", DataType.FREQUENCY)
     CURRENCY = FieldName("Currency", "Currency", DataType.STRING)
-    INSTRUMENT_COLLECTION = FieldName("Instrument Collection","Collection of instruments", DataType.LIST)
+    INSTRUMENT_COLLECTION = FieldName("Instrument Collection", "Collection of instruments", DataType.LIST)
     DATA_SOURCE = FieldName("Data Source", "Data vendor source", DataType.STRING)
     DAY_CONVENTION = FieldName("Day Convention", "Bussiness day convention", DataType.DAY_CONVENTION)
     DAY_CONVENTION_TERMINATION = FieldName("Day Convention Termination",
@@ -21,6 +21,8 @@ class Field(object):
     ISSUE_DATE = FieldName("Issue Date", "Date of issuance of a security", DataType.DATE)
 
     MATURITY_DATE = FieldName("Maturity Date", "Maturity date of a security", DataType.DATE)
+    OBJECT = FieldName("Object", "Instantiation of a QuantLib class", DataType.OBJECT)
+    OBJECT_ID = FieldName("Object Id", "ID of a QuantLib object", DataType.STRING)
     PRICE_LAST = FieldName("Price Last", "Last price of a security", DataType.FLOAT)
     PRICE = FieldName("Price", "Price of a security", DataType.FLOAT)
     SECURITY_DATA = FieldName("Security Data", "Security refernce data", DataType.DICT)

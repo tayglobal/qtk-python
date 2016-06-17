@@ -89,8 +89,9 @@ class BondYieldCurveCreator(CreatorBase):
     _req_fields = [fl.INSTRUMENT_COLLECTION, fl.ASOF_DATE, ]
     _opt_fields = []
 
-    @staticmethod
-    def create(data, asof_date, conventions=None):
+
+    def _create(self, asof_date, conventions=None):
+        data = self._data
         curve_members = data[fl.INSTRUMENT_COLLECTION.id]
         conventions = data.get(fl.CONVENTIONS.id, conventions)
         rate_helpers = []

@@ -47,6 +47,7 @@ class CreatorBase(object):
     """
     __metaclass__ = CreatorBaseMeta
 
+
     def __init__(self, data, params=None):
         """
 
@@ -68,17 +69,25 @@ class CreatorBase(object):
         return [Field.TEMPLATE] + cls._req_fields
 
     @classmethod
+    def get_req_field_ids(cls):
+        return [f.id for f in cls.get_req_fields()]
+
+    @classmethod
     def _check_fields(cls, data):
-        missing_fields = set(cls.get_req_fields(), set(data.keys()))
+        missing_fields = list(set(cls.get_req_field_ids()) - set(data.keys()))
         if len(missing_fields):
-            raise AttributeError("Missing fields in data " + ", ".join([mf.id for mf in missing_fields]))
+            raise AttributeError("Missing fields in data " + ", ".join([mf for mf in missing_fields]))
         return True
 
     @classmethod
     def _check_convert_datatypes(cls, data):
         for field_id, val in data.iteritems():
+
             field = FieldName.lookup(field_id)
+            print field_id, field.data_type
             cnvrt_val = field.data_type.convert(val)
+            print val
+
             data[field_id] = cnvrt_val
 
             if field.data_type == DataType.LIST:
@@ -90,5 +99,10 @@ class CreatorBase(object):
         self._check_fields(self._data)
         self._check_convert_datatypes(self._data)
 
+    def create(self, asof_date=None, conventions=None):
+        from qtk.fields import Field
+        obj = self._create(asof_date, conventions)
+        self._data[Field.OBJECT.id] = obj
 
-
+    def _create(self, asof_date=None, conventions=None):
+        raise NotImplementedError("Missing method _create for Creator " + self.__class__.__name__)

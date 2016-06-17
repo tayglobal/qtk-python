@@ -160,24 +160,24 @@ class TypeName(NameBase):
     def type(self):
         return self._type
 
-    @classmethod
     def convert(self, value):
         return self._converter(value)
 
 
 class DataType(object):
-    TEMPLATE = TypeName("Template", TemplateBase)
+    TEMPLATE = TypeName("Template", TemplateBase, lambda x: x)
     INT = TypeName("Integer", int, int)
     FLOAT = TypeName("Float", float, float)
     STRING = TypeName("String", str, str)
     BOOL = TypeName("Boolean", bool, bool)
     LIST = TypeName("List", list, list)
     DICT = TypeName("Dictionary", dict, dict)
+    OBJECT = TypeName("Object", object, lambda x: x)
 
     DATE = TypeName("Date", ql.Date, qlf.to_date)
     FREQUENCY = TypeName("Frequency", int, qlf.to_frequency)  # this is enum for frequency
     DAYCOUNT = TypeName("Day Count", ql.DayCounter, qlf.to_daycount)
-    DAY_CONVENTION = TypeName("Day Convention", int, qlf.to_day_convention())  # this is enum for day convention
+    DAY_CONVENTION = TypeName("Day Convention", int, qlf.to_day_convention)  # this is enum for day convention
     CALENDAR = TypeName("Calendar", ql.Calendar, qlf.to_calendar)
 
 

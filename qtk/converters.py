@@ -1,7 +1,7 @@
 import QuantLib as ql
 import datetime
 from dateutil.parser import parse
-from .common import TemplateBase, DataType as dt
+
 
 
 class QuantLibConverter(object):
@@ -88,13 +88,26 @@ class QuantLibConverter(object):
         :return:
         """
         # remove spaces, parenthesis and capitalize
-        day_count = day_count.upper().translate(None, " ()")
-        return cls._daycount_map[day_count]
+        if isinstance(day_count, ql.DayCounter):
+            return day_count
+        else:
+            day_count = day_count.upper().translate(None, " ()")
+            return cls._daycount_map[day_count]
 
     @classmethod
     def to_frequency(cls, freq):
-        freq = freq.upper().translate(None, " ")
-        return  cls._freq_map[freq]
+        if isinstance(freq, int) or (freq is None):
+            return freq
+        else:
+            try:
+                freq = int(freq)
+                return freq
+            except ValueError as e:
+                freq = freq.upper().translate(None, " ")
+                return cls._freq_map[freq]
+            except:
+                raise ValueError("Invalid value for freq")
+
 
     @classmethod
     def to_date(cls, date):
@@ -146,6 +159,7 @@ class QuantLibConverter(object):
 
     @classmethod
     def to_template(cls, template):
+        from .common import TemplateBase
         if isinstance(template, TemplateBase):
             return template
         elif isinstance(template, str):
@@ -161,8 +175,11 @@ class QuantLibConverter(object):
 
     @classmethod
     def to_calendar(cls, calendar):
-        calendar = calendar.upper().translate(None, " ")
-        return cls._calendar_map[calendar]
+        if isinstance(calendar, ql.Calendar):
+            return calendar
+        else:
+            calendar = calendar.upper().translate(None, " ")
+            return cls._calendar_map[calendar]
 
     """
     @classmethod
