@@ -1,6 +1,6 @@
 import creators  # has to happen before templates
 from .templates import Template
-from .fields import FieldList
+from .fields import Field
 from .converters import QuantLibConverter
 from .common import TemplateBase
 

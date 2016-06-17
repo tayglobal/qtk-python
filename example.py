@@ -6,6 +6,7 @@ import QuantLib as ql
 from qtk.data.bbg.requesthandler import BlpapiRequestHandler
 from qtk.data.bbg.ircurves import IRCurveData
 from qtk.creators.termstructure import BondYieldCurveCreator
+from qtk.controller import Controller
 
 consoleHandler = logging.StreamHandler()
 logger = logging.getLogger()
@@ -22,10 +23,13 @@ pprint(output)
 
 blp.stop_session()
 
-yc_curve = BondYieldCurveCreator.create(output, date)
+con = Controller([output])
+con.parse()
 
-calendar = ql.UnitedStates()
+#yc_curve = BondYieldCurveCreator.create(output, date)
 
-for i in range(121):
-    d = calendar.advance(date, ql.Period(i, ql.Months))
-    print str(i)+"M",d, yc_curve.discount(d)
+#calendar = ql.UnitedStates()
+
+#for i in range(121):
+#    d = calendar.advance(date, ql.Period(i, ql.Months))
+#    print str(i)+"M",d, yc_curve.discount(d)

@@ -10,3 +10,4 @@ BLP_FIELD_ID = blpapi.Name("fieldId")
 BLP_SECURITY = blpapi.Name("security")
 BLP_SECURITY_DATA = blpapi.Name("securityData")
 BLP_CURVE_MEMBERS = blpapi.Name("CURVE_MEMBERS")
+

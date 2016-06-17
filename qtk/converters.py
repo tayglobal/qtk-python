@@ -1,7 +1,7 @@
 import QuantLib as ql
 import datetime
 from dateutil.parser import parse
-from common import TemplateBase
+from .common import TemplateBase, DataType as dt
 
 
 class QuantLibConverter(object):
@@ -67,6 +67,16 @@ class QuantLibConverter(object):
         "HALFMONTHMODIFIEDFOLLOWING": ql.HalfMonthModifiedFollowing,
         "HMMF": ql.HalfMonthModifiedFollowing
     }
+
+
+    # TODO: Find a proper way to catalogue this
+    _calendar_map = {
+        "US": ql.UnitedStates(),
+        "UNITEDSTATES": ql.UnitedStates(),
+        "UK": ql.UnitedKingdom(),
+        "UNITEDKINGDOM": ql.UnitedKingdom()
+    }
+
 
     @classmethod
     def to_daycount(cls, day_count):
@@ -135,11 +145,11 @@ class QuantLibConverter(object):
         return date_py
 
     @classmethod
-    def to_instance(cls, instance):
-        if isinstance(instance, TemplateBase):
-            return instance
-        elif isinstance(instance, str):
-            return TemplateBase.lookup_instance(instance)
+    def to_template(cls, template):
+        if isinstance(template, TemplateBase):
+            return template
+        elif isinstance(template, str):
+            return TemplateBase.lookup_template(template)
         else:
             raise ValueError("Unrecognized instance")
 
@@ -148,3 +158,32 @@ class QuantLibConverter(object):
     def to_day_convention(cls, day_convention):
         day_convention = day_convention.upper().translate(None, " ")
         return cls._day_convention_map[day_convention]
+
+    @classmethod
+    def to_calendar(cls, calendar):
+        calendar = calendar.upper().translate(None, " ")
+        return cls._calendar_map[calendar]
+
+    """
+    @classmethod
+    def format(cls, value, field):
+
+        _format_map = {
+            dt.INT.id: int,
+            dt.FLOAT.id: float,
+            dt.DATE.id: cls.to_date,
+            dt.BOOL.id: bool,
+            dt.LIST.id: list,
+            dt.DICT.id: dict,
+            dt.DAYCOUNT.id: cls.to_daycount,
+            dt.FREQUENCY.id: cls.to_frequency,
+            dt.DAY_CONVENTION.id: cls.to_day_convention,
+            dt.CALENDAR.id: cls.to_calendar,
+            dt.STRING.id: str
+        }
+
+        format_mapper = _format_map[field.id]
+        value = format_mapper(value)
+
+        return value
+        """

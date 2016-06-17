@@ -1,10 +1,9 @@
-
+import QuantLib as ql
+from .converters import QuantLibConverter as qlf
 
 class TemplateBase(object):
     _inst_map = {}
     _creator = None
-    _req_fields = None
-    _opt_fields = None
 
     def __init__(self):
         self._instance_name = self.__class__.__name__
@@ -24,7 +23,7 @@ class TemplateBase(object):
         return self._iid
 
     @classmethod
-    def lookup_instance(cls, field_id):
+    def lookup_template(cls, field_id):
         c_name = field_id.split(".")[0]
         c = cls._inst_map[c_name]
         return getattr(c, "lookup")(field_id)
@@ -34,24 +33,8 @@ class TemplateBase(object):
         return cls._creator
 
     @classmethod
-    def get_req_fields(cls):
-        return cls._req_fields
-
-    @classmethod
-    def get_opt_fields(cls):
-        return cls._opt_fields
-
-    @classmethod
     def _set_creator(cls, creator):
         cls._creator = creator
-
-    @classmethod
-    def _set_req_fields(cls, req_fields):
-        cls._req_fields = req_fields
-
-    @classmethod
-    def _set_opt_fields(cls, opt_fields):
-        cls._opt_fields = opt_fields
 
 
 
@@ -103,7 +86,7 @@ class NameBase(object):
 class CheckedDataFieldGetter(object):
 
     def __init__(self, data, conventions=None):
-        from .fields import FieldList as fl
+        from .fields import Field as fl
         self._instance_id = data[fl.TEMPLATE.id],
         self._conventions = {} if conventions is None else conventions
         self._data = data
@@ -165,31 +148,52 @@ class Collection(NameBase, TemplateBase):
         super(Collection, self).__init__(name, is_template=True)
         TemplateBase.__init__(self)
 
+class TypeName(NameBase):
+    _id_map = {}
+
+    def __init__(self, name, type, converter):
+        super(TypeName, self).__init__(name)
+        self._type = type
+        self._converter = converter
+
+    @property
+    def type(self):
+        return self._type
+
+    @classmethod
+    def convert(self, value):
+        return self._converter(value)
+
 
 class DataType(object):
-    TEMPLATE = 0
-    INT = 1
-    FLOAT = 2
-    STRING = 3
-    BOOL = 4
-    LIST = 5
-    DICT = 6
-    DATE = 11
-    FREQUENCY = 12
-    DAYCOUNT = 13
-    DAY_CONVENTION = 14
-    CALENDAR = 15
+    TEMPLATE = TypeName("Template", TemplateBase)
+    INT = TypeName("Integer", int, int)
+    FLOAT = TypeName("Float", float, float)
+    STRING = TypeName("String", str, str)
+    BOOL = TypeName("Boolean", bool, bool)
+    LIST = TypeName("List", list, list)
+    DICT = TypeName("Dictionary", dict, dict)
+
+    DATE = TypeName("Date", ql.Date, qlf.to_date)
+    FREQUENCY = TypeName("Frequency", int, qlf.to_frequency)  # this is enum for frequency
+    DAYCOUNT = TypeName("Day Count", ql.DayCounter, qlf.to_daycount)
+    DAY_CONVENTION = TypeName("Day Convention", int, qlf.to_day_convention())  # this is enum for day convention
+    CALENDAR = TypeName("Calendar", ql.Calendar, qlf.to_calendar)
 
 
-class Field(NameBase):
+class FieldName(NameBase):
     _id_map = {}
 
     def __init__(self, name, desc, data_type):
-        super(Field, self).__init__(name, desc=desc)
+        super(FieldName, self).__init__(name, desc=desc)
         self._data_type = data_type
 
+    @property
     def data_type(self):
         return self._data_type
+
+    def check_type(self, value):
+        return isinstance(value, self._data_type.type)
 
 
 class Asset(object):

@@ -5,7 +5,7 @@ import blpapi
 
 from .defs import BLP_SECURITY_DATA, BLP_FIELD_DATA, BLP_CURVE_MEMBERS, BLP_SECURITY
 from .mapper import fmt, get_instrument
-from qtk.fields import FieldList as fl
+from qtk.fields import Field as fl
 from qtk.converters import QuantLibConverter as qlf
 from qtk import Template
 

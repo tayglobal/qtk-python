@@ -1,4 +1,4 @@
-from qtk.fields import FieldList as fl
+from qtk.fields import Field as fl
 import QuantLib as ql
 from qtk.common import CheckedDataFieldGetter
 from qtk.common import Instrument, SecuritySubTypeList
@@ -86,7 +86,7 @@ class BondRateHelperCreator(object):
 class BondYieldCurveCreator(CreatorBase):
 
     _templates = [Template.TS_YIELD_BOND]
-    _req_fields = []
+    _req_fields = [fl.INSTRUMENT_COLLECTION, fl.ASOF_DATE, ]
     _opt_fields = []
 
     @staticmethod

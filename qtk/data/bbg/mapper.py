@@ -1,5 +1,5 @@
 from blpapi.exception import NotFoundException
-from qtk.fields import FieldList as fl
+from qtk.fields import Field as fl
 from qtk.common import DataType as dt
 from qtk.converters import QuantLibConverter as qlf
 from qtk.templates import Template as inst
@@ -68,7 +68,8 @@ def fmt(e, f):
         dt.FREQUENCY: _to_freq,
     }
 
-    converter = _format_map[key.data_type()]
+    #converter = _format_map[key.data_type()]
+    converter = _to_str
     try:
         val = converter(e, f)
     except NotFoundException as e:
@@ -87,3 +88,4 @@ def get_instrument(asset_type, security_type, security_subtype):
     key_members = [security_type, security_subtype]
     key = ".".join([k.upper().replace(" ", "") for k in key_members])
     return _instrument_map[key]
+
