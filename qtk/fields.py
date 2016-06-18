@@ -18,10 +18,12 @@ class Field(object):
     DAYCOUNT = FieldName("Day Count", "Day count of a security", DataType.DAYCOUNT)
     END_OF_MONTH = FieldName("End Of Month", "End of month rule", DataType.BOOL)
     FACE_AMOUNT = FieldName("Face Amount", "Face amount", DataType.FLOAT)
+    INTERPOLATION_METHOD = FieldName("Interpolation Method", "Interpolation Method", DataType.STRING)
     ISSUE_DATE = FieldName("Issue Date", "Date of issuance of a security", DataType.DATE)
 
     MATURITY_DATE = FieldName("Maturity Date", "Maturity date of a security", DataType.DATE)
-    OBJECT = FieldName("Object", "Instantiation of a QuantLib class", DataType.OBJECT)
+    OBJECT = FieldName("Object", "Instantiation of a QuantLib class",
+                       DataType.OBJECT)  # hardcoded field in creators/common; do not change
     OBJECT_ID = FieldName("Object Id", "ID of a QuantLib object", DataType.STRING)
 
     PRICE = FieldName("Price", "Price of a security", DataType.FLOAT)

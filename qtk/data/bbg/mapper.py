@@ -15,7 +15,8 @@ __field_list_pair = [
     ("PX_LAST", fl.PRICE),
     ("PX_MID", fl.PRICE),
     ("SECURITY_TYP", fl.SECURITY_TYPE),
-    ("SECURITY_TYP2", fl.SECURITY_SUBTYPE)
+    ("SECURITY_TYP2", fl.SECURITY_SUBTYPE),
+    ("CRNCY", fl.CURRENCY)
 ]
 
 __bbg_to_std = {}

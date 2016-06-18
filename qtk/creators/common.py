@@ -26,6 +26,15 @@ class CreatorBaseMeta(type):
         elif name != "CreatorBase":
             raise AttributeError("Expected _req_fields class variable definition for creator ", self)
 
+        convention_keys = dct.get("_convention_keys")
+        if convention_keys is not None:
+            if isinstance(convention_keys, list):
+                pass
+            else:
+                raise ValueError("_convention_keys not of type list")
+        elif name != "CreatorBase":
+            raise AttributeError("Expected _convention_keys class variable definition for creator ", self)
+
         """
         opt_fields = dct.get("_opt_fields")
         if opt_fields is not None:
@@ -47,7 +56,6 @@ class CreatorBase(object):
     """
     __metaclass__ = CreatorBaseMeta
 
-
     def __init__(self, data, params=None):
         """
 
@@ -58,6 +66,9 @@ class CreatorBase(object):
 
         self._data = data
         self._params = params or {}
+
+    def get_convention_key(self):
+        return ".".join([self._data["Template"].id] + [self._data[k] for k in self._convention_keys])
 
     @classmethod
     def get_templates(cls):
@@ -76,7 +87,8 @@ class CreatorBase(object):
     def _check_fields(cls, data):
         missing_fields = list(set(cls.get_req_field_ids()) - set(data.keys()))
         if len(missing_fields):
-            raise AttributeError("Missing fields in data " + ", ".join([mf for mf in missing_fields]))
+            raise AttributeError("Missing fields in " + cls.__class__.__name__ + " data " +
+                                 ", ".join([mf for mf in missing_fields]))
         return True
 
     @classmethod
@@ -97,9 +109,8 @@ class CreatorBase(object):
         self._check_convert_datatypes(self._data)
 
     def create(self, asof_date=None, conventions=None):
-        from qtk.fields import Field
         obj = self._create(self._data, asof_date, conventions)
-        self._data[Field.OBJECT.id] = obj
+        self._data["Object"] = obj
         return obj
 
     def _create(self, data, asof_date=None, conventions=None):

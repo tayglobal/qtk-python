@@ -3,7 +3,7 @@ This file handles Interest Rate Curves
 """
 import blpapi
 
-from .defs import BLP_SECURITY_DATA, BLP_FIELD_DATA, BLP_CURVE_MEMBERS, BLP_SECURITY
+from .defs import BLP_SECURITY_DATA, BLP_FIELD_DATA, BLP_CURVE_MEMBERS, BLP_SECURITY, BLP_CRNCY
 from .mapper import fmt, get_instrument
 from qtk.fields import Field as fl
 from qtk.converters import QuantLibConverter as qlf
@@ -12,7 +12,7 @@ from qtk import Template
 
 class IRCurveData(object):
     _CURVE_MEMBER_DATA0 = ["CPN", "CPN_FREQ", "ISSUE_DT", "MATURITY",
-                           "DAY_CNT_DES"]
+                           "DAY_CNT_DES", "CRNCY"]
     _CURVE_MEMBER_DATA1 = ["SECURITY_TYP", "SECURITY_TYP2", "BPIPE_REFERENCE_SECURITY_CLASS"]
 
     def __init__(self, blp_request_handler):
@@ -41,6 +41,7 @@ class IRCurveData(object):
             request = refservice.createRequest("ReferenceDataRequest")
             request.append("securities", index_ticker)
             request.append("fields", "CURVE_MEMBERS")
+            request.append("fields", "CRNCY")
             overrides = request.getElement("overrides")
             override_field = overrides.appendElement()
             override_field.setElement("fieldId","CURVE_DATE")
@@ -60,6 +61,8 @@ class IRCurveData(object):
                 member_tickers = [{fl.SECURITY_ID.id: curve_members.getValueAsElement(i).getElementAsString("Curve Members")}
                                   for i in range(curve_members.numValues())]
                 output[fl.INSTRUMENT_COLLECTION.id] = member_tickers
+                currency = field_data.getElement(BLP_CRNCY)
+                output[fl.CURRENCY.id] = currency
 
     @classmethod
     def _get_ircurve_member_data_request_handler(cls, curve_members):

@@ -35,8 +35,9 @@ class ScheduleCreator(object):
 
 class DepositRateHelperCreator(CreatorBase):
     _templates = [Template.CRV_INST_GOVT_ZCB]
-    _req_fields = [fl.ISSUE_DATE, fl.MATURITY_DATE, fl.COUPON, fl.PRICE]
+    _req_fields = [fl.ISSUE_DATE, fl.MATURITY_DATE, fl.COUPON, fl.PRICE, fl.CURRENCY]
     _opt_fields = []
+    _convention_keys = [fl.CURRENCY]
 
     @classmethod
     def _create(cls, data, asof_date, convention=None):
@@ -66,9 +67,9 @@ class DepositRateHelperCreator(CreatorBase):
 
 class BondRateHelperCreator(CreatorBase):
     _templates = [Template.CRV_INST_GOVT_BOND]
-    _req_fields = [fl.ISSUE_DATE, fl.MATURITY_DATE, fl.COUPON, fl.COUPON_FREQ, fl.PRICE]
+    _req_fields = [fl.ISSUE_DATE, fl.MATURITY_DATE, fl.COUPON, fl.COUPON_FREQ, fl.PRICE, fl.CURRENCY]
     _opt_fields = []
-
+    _convention_keys = [fl.CURRENCY]
 
     @staticmethod
     def _create(data, asof_date, convention=None):
@@ -93,16 +94,27 @@ class BondRateHelperCreator(CreatorBase):
 
 
 class BondYieldCurveCreator(CreatorBase):
-
+    # required fields
     _templates = [Template.TS_YIELD_BOND]
-    _req_fields = [fl.INSTRUMENT_COLLECTION, fl.ASOF_DATE, ]
-    _opt_fields = []
+    _req_fields = [fl.INSTRUMENT_COLLECTION, fl.ASOF_DATE, fl.CURRENCY]
+    _opt_fields = [fl.INTERPOLATION_METHOD]
+    _convention_keys = [fl.CURRENCY]
 
+    # class data
+    _interpolator_map = {
+        "LinearZero": ql.PiecewiseLinearZero,
+        "CubicZero": ql.PiecewiseCubicZero,
+        "FlatForward": ql.PiecewiseFlatForward,
+        "LinearForward": ql.PiecewiseLinearForward,
+        "LogCubicDiscount": ql.PiecewiseLogCubicDiscount
+    }
 
-    def _create(self, data, asof_date, conventions=None):
+    @classmethod
+    def _create(cls, data, asof_date, conventions=None):
         curve_members = data[fl.INSTRUMENT_COLLECTION.id]
         conventions = data.get(fl.CONVENTIONS.id, conventions)
         rate_helpers = []
+        intepolator = data.get(fl.INTERPOLATION_METHOD.id, "LinearZero")
         for c in curve_members:
             loc_conventions = conventions or c.get(fl.CONVENTIONS.id)
             dfg = CheckedDataFieldGetter(c, loc_conventions)
@@ -118,7 +130,8 @@ class BondYieldCurveCreator(CreatorBase):
 
         day_count = ql.Actual360()
 
-        yc_curve = ql.PiecewiseLinearZero(
+        yc_method = cls._interpolator_map[intepolator]
+        yc_curve = yc_method(
             asof_date,
             rate_helpers,
             day_count

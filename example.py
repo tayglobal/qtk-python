@@ -32,4 +32,4 @@ calendar = ql.UnitedStates()
 
 for i in range(121):
     d = calendar.advance(date, ql.Period(i, ql.Months))
-    print str(i)+"M",d, yc_curve.discount(d)
+    print str(i)+"M", d, yc_curve.discount(d)
