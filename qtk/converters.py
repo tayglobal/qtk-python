@@ -108,7 +108,6 @@ class QuantLibConverter(object):
             except:
                 raise ValueError("Invalid value for freq")
 
-
     @classmethod
     def to_date(cls, date):
         if isinstance(date, ql.Date):

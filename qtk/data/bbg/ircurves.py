@@ -61,14 +61,13 @@ class IRCurveData(object):
                 member_tickers = [{fl.SECURITY_ID.id: curve_members.getValueAsElement(i).getElementAsString("Curve Members")}
                                   for i in range(curve_members.numValues())]
                 output[fl.INSTRUMENT_COLLECTION.id] = member_tickers
-                currency = field_data.getElement(BLP_CRNCY)
+                currency = field_data.getElementAsString(BLP_CRNCY)
                 output[fl.CURRENCY.id] = currency
 
     @classmethod
     def _get_ircurve_member_data_request_handler(cls, curve_members):
         def request_handler(session):
             refservice = session.getService("//blp/refdata")
-            #request = refservice.createRequest("HistoricalDataRequest")
             request = refservice.createRequest("ReferenceDataRequest")
             for c in curve_members:
                 request.append("securities", c[fl.SECURITY_ID.id])

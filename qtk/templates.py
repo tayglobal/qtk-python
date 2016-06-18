@@ -2,14 +2,14 @@ from qtk.common import Instrument, SecurityTypeList, SecuritySubTypeList, Collec
 
 
 class Template(object):
-    INST_GOVT_ZCB = Instrument("Government ZCB", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
+    INST_GOVT_ZCB = Instrument("", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
                                SecuritySubTypeList.ZCB)
-    INST_GOVT_BOND = Instrument("Government Bond", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
+    INST_GOVT_BOND = Instrument("", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
                                 SecuritySubTypeList.BOND)
 
-    CRV_INST_GOVT_ZCB = Instrument("Curve Instrument Government ZCB", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
+    CRV_INST_GOVT_ZCB = Instrument("Curve Instrument", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
                                SecuritySubTypeList.ZCB)
-    CRV_INST_GOVT_BOND = Instrument("Curve Instrument Government Bond", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
+    CRV_INST_GOVT_BOND = Instrument("Curve Instrument", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
                                 SecuritySubTypeList.BOND)
 
     COLN_INSTRUMENTS = Collection("Instrument Collection")

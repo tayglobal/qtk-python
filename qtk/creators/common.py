@@ -68,7 +68,7 @@ class CreatorBase(object):
         self._params = params or {}
 
     def get_convention_key(self):
-        return ".".join([self._data["Template"].id] + [self._data[k] for k in self._convention_keys])
+        return ".".join([self._data["Template"].id] + [self._data[k.id] for k in self._convention_keys])
 
     @classmethod
     def get_templates(cls):
