@@ -97,7 +97,7 @@ class IRCurveData(object):
                     key, security_type = fmt(field_data, "SECURITY_TYP")
                     key, security_subtype = fmt(field_data, "SECURITY_TYP2")
                     instrument = get_instrument(asset_type, security_type, security_subtype)
-                    data_dict[fl.TEMPLATE.id] = instrument
+                    data_dict[fl.TEMPLATE.id] = instrument.id
 
 
     @classmethod

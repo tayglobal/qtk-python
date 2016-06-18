@@ -82,11 +82,8 @@ class CreatorBase(object):
     @classmethod
     def _check_convert_datatypes(cls, data):
         for field_id, val in data.iteritems():
-
             field = FieldName.lookup(field_id)
-            print field_id, field.data_type
             cnvrt_val = field.data_type.convert(val)
-            print val
 
             data[field_id] = cnvrt_val
 
@@ -101,8 +98,9 @@ class CreatorBase(object):
 
     def create(self, asof_date=None, conventions=None):
         from qtk.fields import Field
-        obj = self._create(asof_date, conventions)
+        obj = self._create(self._data, asof_date, conventions)
         self._data[Field.OBJECT.id] = obj
+        return obj
 
-    def _create(self, asof_date=None, conventions=None):
+    def _create(self, data, asof_date=None, conventions=None):
         raise NotImplementedError("Missing method _create for Creator " + self.__class__.__name__)

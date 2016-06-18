@@ -23,8 +23,9 @@ class Field(object):
     MATURITY_DATE = FieldName("Maturity Date", "Maturity date of a security", DataType.DATE)
     OBJECT = FieldName("Object", "Instantiation of a QuantLib class", DataType.OBJECT)
     OBJECT_ID = FieldName("Object Id", "ID of a QuantLib object", DataType.STRING)
-    PRICE_LAST = FieldName("Price Last", "Last price of a security", DataType.FLOAT)
+
     PRICE = FieldName("Price", "Price of a security", DataType.FLOAT)
+    PRICE_FLAVOR = FieldName("Price Flavor", "Flavor such as bid, ask or mid", DataType.STRING)
     SECURITY_DATA = FieldName("Security Data", "Security refernce data", DataType.DICT)
     SECURITY_ID = FieldName("Security Id", "Security identifier", DataType.STRING)
     SECURITY_TYPE = FieldName("Security Type", "Security Type", DataType.STRING)

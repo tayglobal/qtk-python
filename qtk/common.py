@@ -165,7 +165,7 @@ class TypeName(NameBase):
 
 
 class DataType(object):
-    TEMPLATE = TypeName("Template", TemplateBase, lambda x: x)
+    TEMPLATE = TypeName("Template", TemplateBase, qlf.to_template)
     INT = TypeName("Integer", int, int)
     FLOAT = TypeName("Float", float, float)
     STRING = TypeName("String", str, str)
