@@ -7,10 +7,10 @@ class Field(object):
     ASSET_CLASS = FieldName("Asset Class", "Asset class of a security", DataType.STRING)
     CALENDAR = FieldName("Calendar", "Calendar", DataType.CALENDAR)
     CONVENTIONS = FieldName("Conventions", "Conventions for instruments, models or indices", DataType.DICT)
+    COUNTRY = FieldName("Country", "Country", DataType.STRING)
     COUPON = FieldName("Coupon", "Coupon of a bond in % units", DataType.FLOAT)
     COUPON_FREQ = FieldName("Coupon Frequency", "Coupon frequency of a bond", DataType.FREQUENCY)
     CURRENCY = FieldName("Currency", "Currency", DataType.STRING)
-    INSTRUMENT_COLLECTION = FieldName("Instrument Collection", "Collection of instruments", DataType.LIST)
     DATA_SOURCE = FieldName("Data Source", "Data vendor source", DataType.STRING)
     DAY_CONVENTION = FieldName("Day Convention", "Bussiness day convention", DataType.DAY_CONVENTION)
     DAY_CONVENTION_TERMINATION = FieldName("Day Convention Termination",
@@ -19,6 +19,7 @@ class Field(object):
     END_OF_MONTH = FieldName("End Of Month", "End of month rule", DataType.BOOL)
     FACE_AMOUNT = FieldName("Face Amount", "Face amount", DataType.FLOAT)
     INTERPOLATION_METHOD = FieldName("Interpolation Method", "Interpolation Method", DataType.STRING)
+    INSTRUMENT_COLLECTION = FieldName("Instrument Collection", "Collection of instruments", DataType.LIST)
     ISSUE_DATE = FieldName("Issue Date", "Date of issuance of a security", DataType.DATE)
 
     MATURITY_DATE = FieldName("Maturity Date", "Maturity date of a security", DataType.DATE)
@@ -33,5 +34,6 @@ class Field(object):
     SECURITY_TYPE = FieldName("Security Type", "Security Type", DataType.STRING)
     SECURITY_SUBTYPE = FieldName("Security Subtype", "Security Subtype", DataType.STRING)
     SETTLEMENT_DAYS = FieldName("Settlement Days", "Settlement days", DataType.INT)
-    TEMPLATE = FieldName("Template", "Instantiation template", DataType.TEMPLATE)
+    TEMPLATE = FieldName("Template", "Instantiation template",
+                         DataType.TEMPLATE)  # hardcoded field in creators/common; do not change
     TICKER = FieldName("Ticker", "Ticker identifier for a security", DataType.STRING)

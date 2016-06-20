@@ -166,7 +166,6 @@ class QuantLibConverter(object):
         else:
             raise ValueError("Unrecognized instance")
 
-
     @classmethod
     def to_day_convention(cls, day_convention):
         day_convention = day_convention.upper().translate(None, " ")

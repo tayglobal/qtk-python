@@ -11,4 +11,5 @@ BLP_SECURITY = blpapi.Name("security")
 BLP_SECURITY_DATA = blpapi.Name("securityData")
 BLP_CURVE_MEMBERS = blpapi.Name("CURVE_MEMBERS")
 BLP_CRNCY = blpapi.Name("CRNCY")
+BLP_COUNTRY = blpapi.Name("COUNTRY")
 

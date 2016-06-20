@@ -1,7 +1,7 @@
 from qtk.fields import Field as fl
 import QuantLib as ql
 from qtk.common import CheckedDataFieldGetter
-from qtk.common import Instrument, SecuritySubTypeList
+from qtk.common import Instrument, Category
 from .common import CreatorBase
 from qtk.templates import Template
 
@@ -13,7 +13,7 @@ class ScheduleCreator(object):
         dfg = CheckedDataFieldGetter(data, convention)
 
         maturity_date = dfg.get(fl.MATURITY_DATE)
-        issue_date = dfg.get(fl.ISSUE_DATE)
+        issue_date = dfg.get(fl.ISSUE_DATE) or dfg.get(fl.ASOF_DATE)
         #asof_date = asof_date
         coupon_freq = dfg.get(fl.COUPON_FREQ)
         period = ql.Period(coupon_freq)
@@ -96,9 +96,9 @@ class BondRateHelperCreator(CreatorBase):
 class BondYieldCurveCreator(CreatorBase):
     # required fields
     _templates = [Template.TS_YIELD_BOND]
-    _req_fields = [fl.INSTRUMENT_COLLECTION, fl.ASOF_DATE, fl.CURRENCY]
+    _req_fields = [fl.INSTRUMENT_COLLECTION, fl.ASOF_DATE, fl.COUNTRY, fl.CURRENCY]
     _opt_fields = [fl.INTERPOLATION_METHOD]
-    _convention_keys = [fl.CURRENCY]
+    _convention_keys = [fl.COUNTRY]
 
     # class data
     _interpolator_map = {
@@ -121,10 +121,10 @@ class BondYieldCurveCreator(CreatorBase):
             instance = dfg.get(fl.TEMPLATE)
             loc_asof_date = dfg.get(fl.ASOF_DATE, asof_date)
 
-            if isinstance(instance, Instrument) and (instance.security_subtype == SecuritySubTypeList.ZCB):
+            if isinstance(instance, Instrument) and (instance.security_subtype == Category.ZCB):
                 depo_rate_helper = DepositRateHelperCreator(c).create(loc_asof_date, conventions)
                 rate_helpers.append(depo_rate_helper)
-            elif isinstance(instance, Instrument) and (instance.security_subtype == SecuritySubTypeList.BOND):
+            elif isinstance(instance, Instrument) and (instance.security_subtype == Category.BOND):
                 bond_rate_helper = BondRateHelperCreator(c).create(loc_asof_date, conventions)
                 rate_helpers.append(bond_rate_helper)
 

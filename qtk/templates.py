@@ -1,17 +1,13 @@
-from qtk.common import Instrument, SecurityTypeList, SecuritySubTypeList, Collection, Asset, TermStructure, Category
+from qtk.common import Instrument,GenericTemplate, Category
 
 
 class Template(object):
-    INST_GOVT_ZCB = Instrument("", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
-                               SecuritySubTypeList.ZCB)
-    INST_GOVT_BOND = Instrument("", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
-                                SecuritySubTypeList.BOND)
+    INST_GOVT_ZCB = Instrument("", Category.FIXED_INCOME, Category.GOVERNMENT, Category.ZCB)
+    INST_GOVT_BOND = Instrument("", Category.FIXED_INCOME, Category.GOVERNMENT, Category.BOND)
 
-    CRV_INST_GOVT_ZCB = Instrument("Curve Instrument", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
-                               SecuritySubTypeList.ZCB)
-    CRV_INST_GOVT_BOND = Instrument("Curve Instrument", Asset.FIXED_INCOME, SecurityTypeList.GOVERNMENT,
-                                SecuritySubTypeList.BOND)
+    CRV_INST_GOVT_ZCB = Instrument("Curve Member", Category.FIXED_INCOME, Category.GOVERNMENT, Category.ZCB)
+    CRV_INST_GOVT_BOND = Instrument("Curve Member",Category.FIXED_INCOME, Category.GOVERNMENT, Category.BOND)
 
-    COLN_INSTRUMENTS = Collection("Instrument Collection")
+    TS_YIELD_BOND = GenericTemplate("Bond Curve", prefix=Category.TERM_STRUCTURE.id, category=Category.YIELD)
+    SCHEDULE = GenericTemplate("Schedule", prefix=Category.TIME.id, category=None)
 
-    TS_YIELD_BOND = TermStructure("Bond Curve", Category.YIELD)

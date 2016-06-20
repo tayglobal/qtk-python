@@ -3,7 +3,7 @@ This file handles Interest Rate Curves
 """
 import blpapi
 
-from .defs import BLP_SECURITY_DATA, BLP_FIELD_DATA, BLP_CURVE_MEMBERS, BLP_SECURITY, BLP_CRNCY
+from .defs import BLP_SECURITY_DATA, BLP_FIELD_DATA, BLP_CURVE_MEMBERS, BLP_SECURITY, BLP_CRNCY, BLP_COUNTRY
 from .mapper import fmt, get_instrument
 from qtk.fields import Field as fl
 from qtk.converters import QuantLibConverter as qlf
@@ -42,6 +42,8 @@ class IRCurveData(object):
             request.append("securities", index_ticker)
             request.append("fields", "CURVE_MEMBERS")
             request.append("fields", "CRNCY")
+            request.append("fields", "COUNTRY")
+
             overrides = request.getElement("overrides")
             override_field = overrides.appendElement()
             override_field.setElement("fieldId","CURVE_DATE")
@@ -63,6 +65,8 @@ class IRCurveData(object):
                 output[fl.INSTRUMENT_COLLECTION.id] = member_tickers
                 currency = field_data.getElementAsString(BLP_CRNCY)
                 output[fl.CURRENCY.id] = currency
+                country = field_data.getElementAsString(BLP_COUNTRY)
+                output[fl.COUNTRY.id] = country
 
     @classmethod
     def _get_ircurve_member_data_request_handler(cls, curve_members):

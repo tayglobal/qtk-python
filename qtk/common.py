@@ -1,13 +1,14 @@
 import QuantLib as ql
 from .converters import QuantLibConverter as qlf
 
+
 class TemplateBase(object):
     _inst_map = {}
     _creator = None
 
-    def __init__(self):
-        self._instance_name = self.__class__.__name__
-        self._iid = NameBase.toid(self._instance_name)
+    def __init__(self, prefix):
+        self._instance_name = prefix
+        self._iid = NameBase.toid(prefix)
         self._inst_map[self._instance_name] = self.__class__
 
     @property
@@ -45,8 +46,8 @@ class NameBase(object):
     each class a reverse lookup of name to class mapping.
     """
 
-    def __init__(self, name, name_id=None, is_template=False, desc=None):
-        prefix = self.__class__.__name__+"." if is_template else ""
+    def __init__(self, name, name_id=None, prefix="", desc=None):
+        prefix += "." if len(prefix) else ""
         name_id = name_id or self.toid(name)
         self._id = prefix+name_id
         self._name = name
@@ -96,27 +97,6 @@ class CheckedDataFieldGetter(object):
         return self._data.get(field.id, self._conventions.get(field.id, default_value))
 
 
-class AssetName(NameBase):
-    _id_map = {}
-
-    def __init__(self, asset_name, desc=None):
-        super(AssetName, self).__init__(asset_name, desc=desc)
-
-
-class SecurityType(NameBase):
-    _id_map = {}
-
-    def __init__(self, security_type, desc=None):
-        super(SecurityType, self).__init__(security_type, desc=desc)
-
-
-class SecuritySubType(NameBase):
-    _id_map = {}
-
-    def __init__(self, security_subtype, desc=None):
-        super(SecuritySubType, self).__init__(security_subtype, desc=desc)
-
-
 class Instrument(NameBase, TemplateBase):
     _id_map = {}
 
@@ -125,8 +105,9 @@ class Instrument(NameBase, TemplateBase):
         self._security_type = security_type
         self._security_subtype = security_subtype
         inst_id = "%s.%s.%s" % (security_type.id, security_subtype.id, self.toid(instrument_name))
-        super(Instrument, self).__init__(instrument_name, name_id=inst_id, is_template=True)
-        TemplateBase.__init__(self)
+        prefix = self.__class__.__name__
+        super(Instrument, self).__init__(instrument_name, name_id=inst_id, prefix=prefix)
+        TemplateBase.__init__(self, prefix)
 
     @property
     def asset_type(self):
@@ -140,13 +121,6 @@ class Instrument(NameBase, TemplateBase):
     def security_subtype(self):
         return self._security_subtype
 
-
-class Collection(NameBase, TemplateBase):
-    _id_map = {}
-
-    def __init__(self, name):
-        super(Collection, self).__init__(name, is_template=True)
-        TemplateBase.__init__(self)
 
 class TypeName(NameBase):
     _id_map = {}
@@ -196,21 +170,6 @@ class FieldName(NameBase):
         return isinstance(value, self._data_type.type)
 
 
-class Asset(object):
-    FIXED_INCOME = AssetName("FI", "Fixed Income")
-    EQUITY = AssetName("EQ", "Equity")
-
-
-class SecurityTypeList(object):
-    GOVERNMENT = SecurityType("Govt", "Government")
-    CORPORATE = SecurityType("Corp", "Corporate")
-
-
-class SecuritySubTypeList(object):
-    BOND = SecuritySubType("Bond")
-    ZCB = SecuritySubType("ZCB")  # Zero coupon bond
-
-
 class CategoryName(NameBase):
     _id_map = {}
 
@@ -218,18 +177,10 @@ class CategoryName(NameBase):
         super(CategoryName, self).__init__(name, desc=desc)
 
 
-class TermStructure(NameBase, TemplateBase):
-    _id_map = {}
-
-    def __init__(self, name, category):
-        name_id = "%s.%s" % (category.id, self.toid(name))
-        super(TermStructure, self).__init__(name, name_id=name_id, is_template=True)
-        TemplateBase.__init__(self)
-
-
 class Category(object):
 
     # termstructure categorization
+    TERM_STRUCTURE = CategoryName("Term Structure")  # Term structure categorization
     CREDIT = CategoryName("Credit")
     INFLATION = CategoryName("Inflation")
     VOLATILITY = CategoryName("Volatility")
@@ -247,3 +198,14 @@ class Category(object):
     BOND = CategoryName("Bond")
     ZCB = CategoryName("ZCB", "Zero Coupon Bond")
 
+    # Other category headings
+    TIME = CategoryName("Time", "Time module")
+
+
+class GenericTemplate(NameBase, TemplateBase):
+    _id_map = {}
+
+    def __init__(self, name,  prefix, category=None):
+        name_id = "%s.%s" % (category.id, self.toid(name)) if category else self.toid(name)
+        super(GenericTemplate, self).__init__(name, name_id=name_id, prefix=prefix)
+        TemplateBase.__init__(self, prefix)
