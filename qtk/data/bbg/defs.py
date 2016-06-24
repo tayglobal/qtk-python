@@ -1,4 +1,7 @@
 import blpapi
+import logging
+
+_bbglogger = logging.getLogger("BBG")
 
 
 BLP_DATE = blpapi.Name("date")

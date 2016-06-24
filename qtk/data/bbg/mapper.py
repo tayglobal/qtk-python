@@ -2,7 +2,7 @@ from blpapi.exception import NotFoundException
 from qtk.fields import Field as fl
 from qtk.common import DataType as dt
 from qtk.converters import QuantLibConverter as qlf
-from qtk.templates import Template as inst
+from qtk.templates import Template as tmpl
 
 __field_list_pair = [
     ("BPIPE_REFERENCE_SECURITY_CLASS", fl.ASSET_CLASS),
@@ -22,6 +22,19 @@ __field_list_pair = [
 __bbg_to_std = {}
 __std_to_bbg = {}
 
+_govt_curve_ticker_map = {"US": "YCGT0025 Index",
+                          "UK": "YCGT0022 Index",
+                          "NL": "YCGT0020 Index",
+                          "JP": "YCGT0018 Index",
+                          "HK": "YCGT0095 Index",
+                          "DE": "YCGT0016 Index",
+                          "FR": "YCGT0014 Index",
+                          "EU": "YCGT0013 Index",
+                          "AU": "YCGT0001 Index",
+                          "CA": "YCGT0007 Index"
+                          }
+
+
 for bbg, std in __field_list_pair:
     __bbg_to_std[bbg] = std
     __std_to_bbg[std] = bbg
@@ -38,12 +51,12 @@ def std_to_bbg(key):
 def fmt(e, f):
     key = bbg_to_std(f)
 
+    def _to_str(ele, field):
+        return ele.getElementAsString(field)
+
+    """
     def _to_int(ele, field):
         return ele.getElementAsInteger(field)
-
-    def _to_str(ele, field):
-
-        return ele.getElementAsString(field)
 
     def _to_float(ele, field):
         return ele.getElementAsFloat(field)
@@ -70,6 +83,7 @@ def fmt(e, f):
     }
 
     #converter = _format_map[key.data_type()]
+    """
     converter = _to_str
     try:
         val = converter(e, f)
@@ -81,9 +95,9 @@ def fmt(e, f):
 
 def get_instrument(asset_type, security_type, security_subtype):
     _instrument_map = {
-        "USGOVERNMENT.BILL": inst.CRV_INST_GOVT_ZCB,
-        "USGOVERNMENT.NOTE": inst.CRV_INST_GOVT_BOND,
-        "USGOVERNMENT.BOND": inst.CRV_INST_GOVT_BOND,
+        "USGOVERNMENT.BILL": tmpl.CRV_INST_GOVT_ZCB,
+        "USGOVERNMENT.NOTE": tmpl.CRV_INST_GOVT_BOND,
+        "USGOVERNMENT.BOND": tmpl.CRV_INST_GOVT_BOND,
     }
 
     key_members = [security_type, security_subtype]

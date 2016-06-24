@@ -1,8 +1,9 @@
 import blpapi
 from . import blpapilog
+from .defs import _bbglogger
 
 def request_error_handler(e):
-    blpapilog.error(str(e))
+    _bbglogger.exception(e)
 
 
 class BlpapiRequestHandler(object):

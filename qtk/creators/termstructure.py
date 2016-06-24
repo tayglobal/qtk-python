@@ -42,7 +42,7 @@ class DepositRateHelperCreator(CreatorBase):
     @classmethod
     def _create(cls, data, asof_date, convention=None):
         dfg = CheckedDataFieldGetter(data, convention)
-        rate = dfg.get(fl.PRICE)
+        rate = dfg.get(fl.YIELD)
         maturity_date = dfg.get(fl.MATURITY_DATE)
 
         settlement_days = dfg.get(fl.SETTLEMENT_DAYS, 2)
@@ -99,6 +99,8 @@ class BondYieldCurveCreator(CreatorBase):
     _req_fields = [fl.INSTRUMENT_COLLECTION, fl.ASOF_DATE, fl.COUNTRY, fl.CURRENCY]
     _opt_fields = [fl.INTERPOLATION_METHOD]
     _convention_keys = [fl.COUNTRY]
+    _values = {fl.INTERPOLATION_METHOD.id: ["LinearZero", "CubicZero", "FlatForward",
+                                            "LinearForward", "LogCubicDiscount"]}
 
     # class data
     _interpolator_map = {
@@ -120,13 +122,15 @@ class BondYieldCurveCreator(CreatorBase):
             dfg = CheckedDataFieldGetter(c, loc_conventions)
             instance = dfg.get(fl.TEMPLATE)
             loc_asof_date = dfg.get(fl.ASOF_DATE, asof_date)
-
-            if isinstance(instance, Instrument) and (instance.security_subtype == Category.ZCB):
-                depo_rate_helper = DepositRateHelperCreator(c).create(loc_asof_date, conventions)
-                rate_helpers.append(depo_rate_helper)
-            elif isinstance(instance, Instrument) and (instance.security_subtype == Category.BOND):
-                bond_rate_helper = BondRateHelperCreator(c).create(loc_asof_date, conventions)
-                rate_helpers.append(bond_rate_helper)
+            try:
+                if isinstance(instance, Instrument) and (instance.security_subtype == Category.ZCB):
+                    depo_rate_helper = DepositRateHelperCreator(c).create(loc_asof_date, conventions)
+                    rate_helpers.append(depo_rate_helper)
+                elif isinstance(instance, Instrument) and (instance.security_subtype == Category.BOND):
+                    bond_rate_helper = BondRateHelperCreator(c).create(loc_asof_date, conventions)
+                    rate_helpers.append(bond_rate_helper)
+            except Exception as e:
+                print e
 
         day_count = ql.Actual360()
 

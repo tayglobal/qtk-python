@@ -14,18 +14,17 @@ logger.addHandler(consoleHandler)
 
 blp = BlpapiRequestHandler()
 blp.start_session()
-date = ql.Date(14, 6, 2016) #datetime.date(2016, 6, 9)
+date = ql.Date(14, 6, 2016)
 
 ircurve_data = IRCurveData(blp)
-output = ircurve_data.get_curve_members("YCGT0025 Index", date)
 
+output = ircurve_data.get_govt_curve_members("YCGT0025 Index", date)
 pprint(output)
 
 blp.stop_session()
 
-con = Controller([output])
+con = Controller(output)
 con.process(date)
-
 yc_curve = output[Field.OBJECT.id]
 
 calendar = ql.UnitedStates()

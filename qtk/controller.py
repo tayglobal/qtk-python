@@ -1,10 +1,11 @@
 from fields import Field as fl
 from converters import QuantLibConverter as qlf
+import QuantLib as ql
 
 
 class Controller(object):
 
-    def __init__(self, data, in_place=False):
+    def __init__(self, data):
         self._data = data if isinstance(data, list) else [data]
 
         self._templates = [qlf.to_template(d[fl.TEMPLATE.id]) for d in self._data]  # get class
@@ -15,6 +16,9 @@ class Controller(object):
             c.check()
 
     def process(self, asof_date, check=True, parse=True):
+        asof_date = qlf.to_date(asof_date)
+        ql.Settings.instance().evaluationDate = asof_date
+
         if parse:
             self.parse()
         return [c.create(asof_date) for c in self._creators]

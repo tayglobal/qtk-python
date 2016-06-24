@@ -37,3 +37,4 @@ class Field(object):
     TEMPLATE = FieldName("Template", "Instantiation template",
                          DataType.TEMPLATE)  # hardcoded field in creators/common; do not change
     TICKER = FieldName("Ticker", "Ticker identifier for a security", DataType.STRING)
+    YIELD = FieldName("Yield", "Security Yield", DataType.FLOAT)

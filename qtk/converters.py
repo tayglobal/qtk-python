@@ -73,8 +73,14 @@ class QuantLibConverter(object):
     _calendar_map = {
         "US": ql.UnitedStates(),
         "UNITEDSTATES": ql.UnitedStates(),
+        "GB": ql.UnitedKingdom(),
         "UK": ql.UnitedKingdom(),
-        "UNITEDKINGDOM": ql.UnitedKingdom()
+        "UNITEDKINGDOM": ql.UnitedKingdom(),
+        "JP": ql.Japan(),
+        "HK": ql.HongKong(),
+        "DE": ql.Germany(),
+        "CA": ql.Canada(),
+        "AU": ql.Australia()
     }
 
 

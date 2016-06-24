@@ -1,6 +1,6 @@
 
 
-_bond_ticker = {
+_bond_curve_ticker = {
     "US": "YCGT0025 Index",
     "UK": "YCGT0022 Index",
     "Netherlands": "YCGT0020 Index",
