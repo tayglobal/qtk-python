@@ -1,26 +1,27 @@
 from qtk.fields import Field as fl
 import QuantLib as ql
-from qtk.common import CheckedDataFieldGetter
 from qtk.common import Instrument, Category
 from .common import CreatorBase
 from qtk.templates import Template
 
 
-class ScheduleCreator(object):
+class ScheduleCreator(CreatorBase):
+    _templates = [Template.SCHEDULE]
+    _req_fields = [fl.ISSUE_DATE, fl.MATURITY_DATE, fl.COUPON_FREQ]
+    _opt_fields = []
+    _convention_keys = [fl.CURRENCY]
 
-    @staticmethod
-    def create(data, asof_date, convention=None):
-        dfg = CheckedDataFieldGetter(data, convention)
+    def _create(self, data, asof_date, convention=None):
 
-        maturity_date = dfg.get(fl.MATURITY_DATE)
-        issue_date = dfg.get(fl.ISSUE_DATE) or dfg.get(fl.ASOF_DATE)
+        maturity_date = self.get(fl.MATURITY_DATE)
+        issue_date = self.get(fl.ISSUE_DATE) or self.get(fl.ASOF_DATE)
         #asof_date = asof_date
-        coupon_freq = dfg.get(fl.COUPON_FREQ)
+        coupon_freq = self.get(fl.COUPON_FREQ)
         period = ql.Period(coupon_freq)
-        calendar = dfg.get(fl.CALENDAR, ql.UnitedStates())
-        convention = dfg.get(fl.DAY_CONVENTION, ql.Following)
-        termination_convention = dfg.get(fl.DAY_CONVENTION_TERMINATION, convention)
-        end_of_month = dfg.get(fl.END_OF_MONTH, True)
+        calendar = self.get(fl.CALENDAR, ql.UnitedStates())
+        convention = self.get(fl.DAY_CONVENTION, ql.Following)
+        termination_convention = self.get(fl.DAY_CONVENTION_TERMINATION, convention)
+        end_of_month = self.get(fl.END_OF_MONTH, True)
 
         schedule = ql.Schedule(issue_date,
                                maturity_date,
@@ -39,19 +40,17 @@ class DepositRateHelperCreator(CreatorBase):
     _opt_fields = []
     _convention_keys = [fl.CURRENCY]
 
-    @classmethod
-    def _create(cls, data, asof_date, convention=None):
-        dfg = CheckedDataFieldGetter(data, convention)
-        rate = dfg.get(fl.YIELD)
-        maturity_date = dfg.get(fl.MATURITY_DATE)
+    def _create(self, data, asof_date, convention=None):
+        rate = self.get(fl.YIELD)
+        maturity_date = self.get(fl.MATURITY_DATE)
 
-        settlement_days = dfg.get(fl.SETTLEMENT_DAYS, 2)
-        day_count = dfg.get(fl.DAYCOUNT)
-        convention = dfg.get(fl.DAY_CONVENTION, ql.Following)
-        calendar = dfg.get(fl.CALENDAR, ql.UnitedStates())
+        settlement_days = self.get(fl.SETTLEMENT_DAYS, 2)
+        day_count = self.get(fl.DAYCOUNT)
+        convention = self.get(fl.DAY_CONVENTION, ql.Following)
+        calendar = self.get(fl.CALENDAR, ql.UnitedStates())
         days = day_count.dayCount(asof_date, maturity_date)
         tenor = ql.Period(days, ql.Days)
-        end_of_month = dfg.get(fl.END_OF_MONTH, True)
+        end_of_month = self.get(fl.END_OF_MONTH, True)
 
         depo_rate_helper = ql.DepositRateHelper(
             ql.QuoteHandle(ql.SimpleQuote(rate/100.0)),
@@ -71,16 +70,14 @@ class BondRateHelperCreator(CreatorBase):
     _opt_fields = []
     _convention_keys = [fl.CURRENCY]
 
-    @staticmethod
-    def _create(data, asof_date, convention=None):
-        dfg = CheckedDataFieldGetter(data, convention)
-        schedule = ScheduleCreator.create(data, asof_date, convention)
-        face_amount = dfg.get(fl.FACE_AMOUNT, 100.0)
-        settlement_days = dfg.get(fl.SETTLEMENT_DAYS, 2)
-        day_count = dfg.get(fl.DAYCOUNT)
-        convention = dfg.get(fl.DAY_CONVENTION, ql.Following)
-        price = dfg.get(fl.PRICE)
-        coupon = dfg.get(fl.COUPON)
+    def _create(self, data, asof_date, convention=None):
+        schedule = ScheduleCreator(data).create(asof_date, convention)
+        face_amount = self.get(fl.FACE_AMOUNT, 100.0)
+        settlement_days = self.get(fl.SETTLEMENT_DAYS, 2)
+        day_count = self.get(fl.DAYCOUNT)
+        convention = self.get(fl.DAY_CONVENTION, ql.Following)
+        price = self.get(fl.PRICE)
+        coupon = self.get(fl.COUPON)
         bond_helper = ql.FixedRateBondHelper(
             ql.QuoteHandle(ql.SimpleQuote(price)),
             settlement_days,
@@ -111,17 +108,15 @@ class BondYieldCurveCreator(CreatorBase):
         "LogCubicDiscount": ql.PiecewiseLogCubicDiscount
     }
 
-    @classmethod
-    def _create(cls, data, asof_date, conventions=None):
+    def _create(self, data, asof_date, conventions=None):
         curve_members = data[fl.INSTRUMENT_COLLECTION.id]
         conventions = data.get(fl.CONVENTIONS.id, conventions)
         rate_helpers = []
         intepolator = data.get(fl.INTERPOLATION_METHOD.id, "LinearZero")
         for c in curve_members:
             loc_conventions = conventions or c.get(fl.CONVENTIONS.id)
-            dfg = CheckedDataFieldGetter(c, loc_conventions)
-            instance = dfg.get(fl.TEMPLATE)
-            loc_asof_date = dfg.get(fl.ASOF_DATE, asof_date)
+            instance = c.get(fl.TEMPLATE.id)
+            loc_asof_date = self.get(fl.ASOF_DATE, asof_date)
             try:
                 if isinstance(instance, Instrument) and (instance.security_subtype == Category.ZCB):
                     depo_rate_helper = DepositRateHelperCreator(c).create(loc_asof_date, conventions)
@@ -134,7 +129,7 @@ class BondYieldCurveCreator(CreatorBase):
 
         day_count = ql.Actual360()
 
-        yc_method = cls._interpolator_map[intepolator]
+        yc_method = self._interpolator_map[intepolator]
         yc_curve = yc_method(
             asof_date,
             rate_helpers,

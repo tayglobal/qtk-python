@@ -21,4 +21,5 @@ class Controller(object):
 
         if parse:
             self.parse()
+
         return [c.create(asof_date) for c in self._creators]

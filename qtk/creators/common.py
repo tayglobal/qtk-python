@@ -66,6 +66,8 @@ class CreatorBase(object):
 
         self._data = data
         self._params = params or {}
+        conventions = self._data.get("Conventions")
+        self._conventions = {} if conventions is None else conventions
 
     def get_convention_key(self):
         return ".".join([self._data["Template"].id] + [self._data[k.id] for k in self._convention_keys])
@@ -115,3 +117,6 @@ class CreatorBase(object):
 
     def _create(self, data, asof_date=None, conventions=None):
         raise NotImplementedError("Missing method _create for Creator " + self.__class__.__name__)
+
+    def get(self, field, default_value=None):
+        return self._data.get(field.id, self._conventions.get(field.id, default_value))

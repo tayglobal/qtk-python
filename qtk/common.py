@@ -84,19 +84,6 @@ class NameBase(object):
         return self._desc
 
 
-class CheckedDataFieldGetter(object):
-
-    def __init__(self, data, conventions=None):
-        from .fields import Field as fl
-        self._instance_id = data[fl.TEMPLATE.id],
-        self._conventions = {} if conventions is None else conventions
-        self._data = data
-        # self._global_conventions =
-
-    def get(self, field, default_value=None):
-        return self._data.get(field.id, self._conventions.get(field.id, default_value))
-
-
 class Instrument(NameBase, TemplateBase):
     _id_map = {}
 
