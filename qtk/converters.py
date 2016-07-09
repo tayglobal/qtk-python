@@ -83,6 +83,12 @@ class QuantLibConverter(object):
         "AU": ql.Australia()
     }
 
+    _compounding_map = {
+        "SIMPLE": ql.Simple,
+        "COMPOUNDED": ql.Compounded,
+        "CONTINUOUS": ql.Continuous,
+        "SIMPLETHENCOMPOUNDED": ql.SimpleThenCompounded
+    }
 
     @classmethod
     def to_daycount(cls, day_count):
@@ -184,6 +190,20 @@ class QuantLibConverter(object):
         else:
             calendar = calendar.upper().translate(None, " ")
             return cls._calendar_map[calendar]
+
+    @classmethod
+    def to_compounding(cls, compounding):
+        if isinstance(compounding, str):
+            compounding = compounding.upper()
+            return cls._compounding_map[compounding]
+        elif isinstance(compounding, int):
+            if compounding in set([ql.Simple, ql.Compounded, ql.Continuous, ql.SimpleThenCompounded]):
+                return compounding
+            else:
+                raise ValueError("Invalid compounding value")
+        else:
+            raise ValueError("Unsupported data type for compounding convention")
+
 
     """
     @classmethod

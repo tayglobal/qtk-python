@@ -8,7 +8,7 @@ __field_list_pair = [
     ("BPIPE_REFERENCE_SECURITY_CLASS", fl.ASSET_CLASS),
     ("CPN", fl.COUPON),
     ("CPN_FREQ", fl.COUPON_FREQ),
-    ("DAY_CNT_DES", fl.DAYCOUNT),
+    ("DAY_CNT_DES", fl.ACCRUAL_BASIS),
     ("ISSUE_DT", fl.ISSUE_DATE),
     ("MATURITY", fl.MATURITY_DATE),
     ("date", fl.ASOF_DATE),

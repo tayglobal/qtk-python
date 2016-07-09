@@ -135,6 +135,7 @@ class DataType(object):
     DICT = TypeName("Dictionary", dict, dict)
     OBJECT = TypeName("Object", object, lambda x: x)
 
+    COMPOUNDING = TypeName("Compounding", int, qlf.to_compounding )
     DATE = TypeName("Date", ql.Date, qlf.to_date)
     FREQUENCY = TypeName("Frequency", int, qlf.to_frequency)  # this is enum for frequency
     DAYCOUNT = TypeName("Day Count", ql.DayCounter, qlf.to_daycount)

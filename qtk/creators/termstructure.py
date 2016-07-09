@@ -19,8 +19,8 @@ class ScheduleCreator(CreatorBase):
         coupon_freq = self.get(fl.COUPON_FREQ)
         period = ql.Period(coupon_freq)
         calendar = self.get(fl.CALENDAR, ql.UnitedStates())
-        convention = self.get(fl.DAY_CONVENTION, ql.Following)
-        termination_convention = self.get(fl.DAY_CONVENTION_TERMINATION, convention)
+        convention = self.get(fl.ACCRUAL_DAY_CONVENTION, ql.Following)
+        termination_convention = self.get(fl.TERMINATION_DAY_CONVENTION, convention)
         end_of_month = self.get(fl.END_OF_MONTH, True)
 
         schedule = ql.Schedule(issue_date,
@@ -45,8 +45,8 @@ class DepositRateHelperCreator(CreatorBase):
         maturity_date = self.get(fl.MATURITY_DATE)
 
         settlement_days = self.get(fl.SETTLEMENT_DAYS, 2)
-        day_count = self.get(fl.DAYCOUNT)
-        convention = self.get(fl.DAY_CONVENTION, ql.Following)
+        day_count = self.get(fl.ACCRUAL_BASIS)
+        convention = self.get(fl.ACCRUAL_DAY_CONVENTION, ql.Following)
         calendar = self.get(fl.CALENDAR, ql.UnitedStates())
         days = day_count.dayCount(asof_date, maturity_date)
         tenor = ql.Period(days, ql.Days)
@@ -74,8 +74,8 @@ class BondRateHelperCreator(CreatorBase):
         schedule = ScheduleCreator(data).create(asof_date, convention)
         face_amount = self.get(fl.FACE_AMOUNT, 100.0)
         settlement_days = self.get(fl.SETTLEMENT_DAYS, 2)
-        day_count = self.get(fl.DAYCOUNT)
-        convention = self.get(fl.DAY_CONVENTION, ql.Following)
+        day_count = self.get(fl.ACCRUAL_BASIS)
+        convention = self.get(fl.ACCRUAL_DAY_CONVENTION, ql.Following)
         price = self.get(fl.PRICE)
         coupon = self.get(fl.COUPON)
         bond_helper = ql.FixedRateBondHelper(

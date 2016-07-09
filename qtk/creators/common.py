@@ -70,7 +70,7 @@ class CreatorBase(object):
         self._conventions = {} if conventions is None else conventions
 
     def get_convention_key(self):
-        return ".".join([self._data["Template"].id] + [self._data[k.id] for k in self._convention_keys])
+        return ".".join([self._data[k.id] for k in self._convention_keys] + [self._data["Template"].id])
 
     @classmethod
     def get_templates(cls):
