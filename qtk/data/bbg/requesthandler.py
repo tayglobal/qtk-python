@@ -1,5 +1,5 @@
 import blpapi
-from . import blpapilog
+from . import _blpapilog
 from .defs import _bbglogger
 
 def request_error_handler(e):

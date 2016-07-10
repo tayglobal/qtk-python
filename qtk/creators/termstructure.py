@@ -3,6 +3,7 @@ import QuantLib as ql
 from qtk.common import Instrument, Category
 from .common import CreatorBase
 from qtk.templates import Template
+from . import _creatorslog
 
 
 class ScheduleCreator(CreatorBase):
@@ -11,7 +12,7 @@ class ScheduleCreator(CreatorBase):
     _opt_fields = []
     _convention_keys = [fl.CURRENCY]
 
-    def _create(self, data, asof_date, convention=None):
+    def _create(self, data, asof_date):
 
         maturity_date = self.get(fl.MATURITY_DATE)
         issue_date = self.get(fl.ISSUE_DATE) or self.get(fl.ASOF_DATE)
@@ -40,11 +41,11 @@ class DepositRateHelperCreator(CreatorBase):
     _opt_fields = []
     _convention_keys = [fl.CURRENCY]
 
-    def _create(self, data, asof_date, convention=None):
+    def _create(self, data, asof_date):
         rate = self.get(fl.YIELD)
         maturity_date = self.get(fl.MATURITY_DATE)
 
-        settlement_days = self.get(fl.SETTLEMENT_DAYS, 2)
+        settlement_days = self.get(fl.SETTLEMENT_DAYS)
         day_count = self.get(fl.ACCRUAL_BASIS)
         convention = self.get(fl.ACCRUAL_DAY_CONVENTION, ql.Following)
         calendar = self.get(fl.CALENDAR, ql.UnitedStates())
@@ -70,12 +71,12 @@ class BondRateHelperCreator(CreatorBase):
     _opt_fields = []
     _convention_keys = [fl.CURRENCY]
 
-    def _create(self, data, asof_date, convention=None):
-        schedule = ScheduleCreator(data).create(asof_date, convention)
+    def _create(self, data, asof_date):
+        schedule = ScheduleCreator(data).create(asof_date)
         face_amount = self.get(fl.FACE_AMOUNT, 100.0)
-        settlement_days = self.get(fl.SETTLEMENT_DAYS, 2)
+        settlement_days = self.get(fl.SETTLEMENT_DAYS)
         day_count = self.get(fl.ACCRUAL_BASIS)
-        convention = self.get(fl.ACCRUAL_DAY_CONVENTION, ql.Following)
+        convention = self.get(fl.ACCRUAL_DAY_CONVENTION)
         price = self.get(fl.PRICE)
         coupon = self.get(fl.COUPON)
         bond_helper = ql.FixedRateBondHelper(
@@ -108,24 +109,22 @@ class BondYieldCurveCreator(CreatorBase):
         "LogCubicDiscount": ql.PiecewiseLogCubicDiscount
     }
 
-    def _create(self, data, asof_date, conventions=None):
+    def _create(self, data, asof_date):
         curve_members = data[fl.INSTRUMENT_COLLECTION.id]
-        conventions = data.get(fl.CONVENTIONS.id, conventions)
         rate_helpers = []
         intepolator = data.get(fl.INTERPOLATION_METHOD.id, "LinearZero")
         for c in curve_members:
-            loc_conventions = conventions or c.get(fl.CONVENTIONS.id)
             instance = c.get(fl.TEMPLATE.id)
             loc_asof_date = self.get(fl.ASOF_DATE, asof_date)
             try:
                 if isinstance(instance, Instrument) and (instance.security_subtype == Category.ZCB):
-                    depo_rate_helper = DepositRateHelperCreator(c).create(loc_asof_date, conventions)
+                    depo_rate_helper = DepositRateHelperCreator(c).create(loc_asof_date)
                     rate_helpers.append(depo_rate_helper)
                 elif isinstance(instance, Instrument) and (instance.security_subtype == Category.BOND):
-                    bond_rate_helper = BondRateHelperCreator(c).create(loc_asof_date, conventions)
+                    bond_rate_helper = BondRateHelperCreator(c).create(loc_asof_date)
                     rate_helpers.append(bond_rate_helper)
             except Exception as e:
-                print e
+                _creatorslog.exception(e)
 
         day_count = ql.Actual360()
 

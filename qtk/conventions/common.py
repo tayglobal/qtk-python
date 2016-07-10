@@ -1,10 +1,22 @@
-from qtk.common import NameBase
+from .govtbonds import _govt_bonds
 
 
-class ConventionName(NameBase):
-    _id_map = {}
+class Convention(object):
+    def _merge_dicts(*dict_args):
+        """
+        Given any number of dicts, shallow copy and merge into a new dict,
+        precedence goes to key value pairs in latter dicts.
+        :param dict_args:
+        :return:
+        """
+        result = {}
+        for dictionary in dict_args:
+            result.update(dictionary)
+        return result
 
-    def __init__(self, instance):
-        super(ConventionName, self).__init__(instance.id, instance.id)
+    _dicts = [_govt_bonds]
+    _conventions = _merge_dicts(*_dicts)
 
-
+    @classmethod
+    def get(cls, convention_key):
+        return cls._conventions.get(convention_key)

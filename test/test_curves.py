@@ -50,9 +50,7 @@ _bond_sample_data = {
                               'Template': 'Instrument.Govt.Zcb.CurveMember'},
                              {'AsOfDate': '2016-06-14',
                               'Coupon': '0.875000',
-                              'CouponFrequency': '2',
                               'Currency': 'USD',
-                              'AccrualBasis': 'ACT/ACT',
                               'IssueDate': '2016-05-31',
                               'MaturityDate': '2018-05-31',
                               'Price': '100.292969',
@@ -60,9 +58,7 @@ _bond_sample_data = {
                               'Template': 'Instrument.Govt.Bond.CurveMember'},
                              {'AsOfDate': '2016-06-14',
                               'Coupon': '0.875000',
-                              'CouponFrequency': '2',
                               'Currency': 'USD',
-                              'AccrualBasis': 'ACT/ACT',
                               'IssueDate': '2016-06-15',
                               'MaturityDate': '2019-06-15',
                               'Price': '100.066406',
@@ -70,9 +66,7 @@ _bond_sample_data = {
                               'Template': 'Instrument.Govt.Bond.CurveMember'},
                              {'AsOfDate': '2016-06-14',
                               'Coupon': '1.375000',
-                              'CouponFrequency': '2',
                               'Currency': 'USD',
-                              'AccrualBasis': 'ACT/ACT',
                               'IssueDate': '2016-05-31',
                               'MaturityDate': '2021-05-31',
                               'Price': '101.136719',
@@ -80,9 +74,7 @@ _bond_sample_data = {
                               'Template': 'Instrument.Govt.Bond.CurveMember'},
                              {'AsOfDate': '2016-06-14',
                               'Coupon': '1.625000',
-                              'CouponFrequency': '2',
                               'Currency': 'USD',
-                              'AccrualBasis': 'ACT/ACT',
                               'IssueDate': '2016-05-31',
                               'MaturityDate': '2023-05-31',
                               'Price': '101.382813',
@@ -90,9 +82,7 @@ _bond_sample_data = {
                               'Template': 'Instrument.Govt.Bond.CurveMember'},
                              {'AsOfDate': '2016-06-14',
                               'Coupon': '1.625000',
-                              'CouponFrequency': '2',
                               'Currency': 'USD',
-                              'AccrualBasis': 'ACT/ACT',
                               'IssueDate': '2016-05-16',
                               'MaturityDate': '2026-05-15',
                               'Price': '100.101563',
@@ -100,9 +90,7 @@ _bond_sample_data = {
                               'Template': 'Instrument.Govt.Bond.CurveMember'},
                              {'AsOfDate': '2016-06-14',
                               'Coupon': '2.500000',
-                              'CouponFrequency': '2',
                               'Currency': 'USD',
-                              'AccrualBasis': 'ACT/ACT',
                               'IssueDate': '2016-05-16',
                               'MaturityDate': '2046-05-15',
                               'Price': '101.617188',
@@ -126,10 +114,10 @@ class TestCurves(TestCase):
         self.assertIsInstance(curve, ql.YieldTermStructure)
 
         tenors = [0, 12, 60, 90, 120]
-        vals = [1.0, 0.995499894398, 0.944190715066, 0.895903621257, 0.849030981225]
+        vals = [1.0, 0.995463027383, 0.944034654878, 0.895839444646, 0.848938836737]
         calendar = ql.UnitedStates()
         for t,v in zip(tenors, vals):
             p = ql.Period(t, ql.Months)
             d = calendar.advance(asof_date, ql.Period(t, ql.Months))
             o = curve.discount(d)
-            self.assertAlmostEqual(o, v, 10, msg="("+str(t)+","+str(d)+")")
+            self.assertAlmostEqual(o, v, 10, msg="("+str(t)+","+str(d)+","+str(o)+","+str(v)+")")

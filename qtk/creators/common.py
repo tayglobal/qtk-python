@@ -1,4 +1,5 @@
 from qtk.common import FieldName, DataType
+from qtk.conventions import Convention
 
 
 class CreatorBaseMeta(type):
@@ -35,15 +36,6 @@ class CreatorBaseMeta(type):
         elif name != "CreatorBase":
             raise AttributeError("Expected _convention_keys class variable definition for creator ", self)
 
-        """
-        opt_fields = dct.get("_opt_fields")
-        if opt_fields is not None:
-            if isinstance(opt_fields, list):
-                t._set_opt_fields(opt_fields)
-            else:
-                raise ValueError("_opt_fields not of type list")
-        """
-
         super(CreatorBaseMeta, self).__init__(name, bases, dct)
 
 
@@ -66,11 +58,12 @@ class CreatorBase(object):
 
         self._data = data
         self._params = params or {}
-        conventions = self._data.get("Conventions")
-        self._conventions = {} if conventions is None else conventions
 
     def get_convention_key(self):
         return ".".join([self._data[k.id] for k in self._convention_keys] + [self._data["Template"].id])
+
+    def get_global_convention(self):
+        return Convention.get(self.get_convention_key())
 
     @classmethod
     def get_templates(cls):
@@ -110,8 +103,11 @@ class CreatorBase(object):
         self._check_fields(self._data)
         self._check_convert_datatypes(self._data)
 
-    def create(self, asof_date=None, conventions=None):
-        obj = self._create(self._data, asof_date, conventions)
+    def create(self, asof_date=None):
+        _conventions = self._data.get("Conventions")
+        self._conventions = _conventions or self.get_global_convention()
+        self._conventions = self._conventions or {}  # default to empty dict if global conventions missing
+        obj = self._create(self._data, asof_date)
         self._data["Object"] = obj
         return obj
 
@@ -119,4 +115,7 @@ class CreatorBase(object):
         raise NotImplementedError("Missing method _create for Creator " + self.__class__.__name__)
 
     def get(self, field, default_value=None):
-        return self._data.get(field.id, self._conventions.get(field.id, default_value))
+        field_id = field.id
+        conventions = self._conventions.get(field_id)
+        return self._data.get(field_id, conventions) if default_value is None \
+            else self._data.get(field_id, default_value)

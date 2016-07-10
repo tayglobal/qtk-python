@@ -1,6 +1,6 @@
 import logging
 
-blpapilog = logging.getLogger("BLPAPI")
+_blpapilog = logging.getLogger("QTK-BLPAPI")
 
 
 
