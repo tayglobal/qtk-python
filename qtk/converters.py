@@ -203,28 +203,3 @@ class QuantLibConverter(object):
                 raise ValueError("Invalid compounding value")
         else:
             raise ValueError("Unsupported data type for compounding convention")
-
-
-    """
-    @classmethod
-    def format(cls, value, field):
-
-        _format_map = {
-            dt.INT.id: int,
-            dt.FLOAT.id: float,
-            dt.DATE.id: cls.to_date,
-            dt.BOOL.id: bool,
-            dt.LIST.id: list,
-            dt.DICT.id: dict,
-            dt.DAYCOUNT.id: cls.to_daycount,
-            dt.FREQUENCY.id: cls.to_frequency,
-            dt.DAY_CONVENTION.id: cls.to_day_convention,
-            dt.CALENDAR.id: cls.to_calendar,
-            dt.STRING.id: str
-        }
-
-        format_mapper = _format_map[field.id]
-        value = format_mapper(value)
-
-        return value
-        """
