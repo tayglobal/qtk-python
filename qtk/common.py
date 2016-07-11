@@ -6,10 +6,11 @@ class TemplateBase(object):
     _inst_map = {}
     _creator = None
 
-    def __init__(self, prefix):
+    def __init__(self, prefix, convention_keys):
         self._instance_name = prefix
         self._iid = NameBase.toid(prefix)
         self._inst_map[self._instance_name] = self.__class__
+        self._convention_keys = convention_keys
 
     @property
     def instance_name(self):
@@ -37,6 +38,8 @@ class TemplateBase(object):
     def _set_creator(cls, creator):
         cls._creator = creator
 
+    def get_convention_keys(self):
+        return self._convention_keys
 
 
 class NameBase(object):
@@ -84,31 +87,6 @@ class NameBase(object):
         return self._desc
 
 
-class Instrument(NameBase, TemplateBase):
-    _id_map = {}
-
-    def __init__(self, instrument_name, asset_type, security_type, security_subtype):
-        self._asset_type = asset_type
-        self._security_type = security_type
-        self._security_subtype = security_subtype
-        inst_id = "%s.%s.%s" % (security_type.id, security_subtype.id, self.toid(instrument_name))
-        prefix = self.__class__.__name__
-        super(Instrument, self).__init__(instrument_name, name_id=inst_id, prefix=prefix)
-        TemplateBase.__init__(self, prefix)
-
-    @property
-    def asset_type(self):
-        return self._asset_type
-
-    @property
-    def security_type(self):
-        return self._security_type
-
-    @property
-    def security_subtype(self):
-        return self._security_subtype
-
-
 class TypeName(NameBase):
     _id_map = {}
 
@@ -143,21 +121,6 @@ class DataType(object):
     CALENDAR = TypeName("Calendar", ql.Calendar, qlf.to_calendar)
 
 
-class FieldName(NameBase):
-    _id_map = {}
-
-    def __init__(self, name, desc, data_type):
-        super(FieldName, self).__init__(name, desc=desc)
-        self._data_type = data_type
-
-    @property
-    def data_type(self):
-        return self._data_type
-
-    def check_type(self, value):
-        return isinstance(value, self._data_type.type)
-
-
 class CategoryName(NameBase):
     _id_map = {}
 
@@ -189,11 +152,3 @@ class Category(object):
     # Other category headings
     TIME = CategoryName("Time", "Time module")
 
-
-class GenericTemplate(NameBase, TemplateBase):
-    _id_map = {}
-
-    def __init__(self, name,  prefix, category=None):
-        name_id = "%s.%s" % (category.id, self.toid(name)) if category else self.toid(name)
-        super(GenericTemplate, self).__init__(name, name_id=name_id, prefix=prefix)
-        TemplateBase.__init__(self, prefix)

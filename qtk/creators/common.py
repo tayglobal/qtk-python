@@ -1,5 +1,7 @@
-from qtk.common import FieldName, DataType
+from qtk.common import DataType
+from qtk.fields import FieldName
 from qtk.conventions import Convention
+from qtk.converters import QuantLibConverter
 
 
 class CreatorBaseMeta(type):
@@ -27,15 +29,6 @@ class CreatorBaseMeta(type):
         elif name != "CreatorBase":
             raise AttributeError("Expected _req_fields class variable definition for creator ", self)
 
-        convention_keys = dct.get("_convention_keys")
-        if convention_keys is not None:
-            if isinstance(convention_keys, list):
-                pass
-            else:
-                raise ValueError("_convention_keys not of type list")
-        elif name != "CreatorBase":
-            raise AttributeError("Expected _convention_keys class variable definition for creator ", self)
-
         super(CreatorBaseMeta, self).__init__(name, bases, dct)
 
 
@@ -58,6 +51,8 @@ class CreatorBase(object):
 
         self._data = data
         self._params = params or {}
+        self._template = QuantLibConverter.to_template(self._data["Template"])
+        self._convention_keys = self._template.get_convention_keys()
 
     def get_convention_key(self):
         return ".".join([self._data[k.id] for k in self._convention_keys] + [self._data["Template"].id])

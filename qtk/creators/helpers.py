@@ -1,6 +1,7 @@
 from qtk.fields import Field as fl
 import QuantLib as ql
-from qtk.common import Instrument, Category
+from qtk.common import Category
+from qtk.templates import Instrument
 from .common import CreatorBase
 from qtk.templates import Template
 from . import _creatorslog
@@ -10,7 +11,6 @@ class ScheduleCreator(CreatorBase):
     _templates = [Template.SCHEDULE]
     _req_fields = [fl.ISSUE_DATE, fl.MATURITY_DATE, fl.COUPON_FREQ]
     _opt_fields = []
-    _convention_keys = [fl.CURRENCY]
 
     def _create(self, data, asof_date):
 
@@ -19,8 +19,8 @@ class ScheduleCreator(CreatorBase):
         #asof_date = asof_date
         coupon_freq = self.get(fl.COUPON_FREQ)
         period = ql.Period(coupon_freq)
-        calendar = self.get(fl.CALENDAR, ql.UnitedStates())
-        convention = self.get(fl.ACCRUAL_DAY_CONVENTION, ql.Following)
+        calendar = self.get(fl.ACCRUAL_CALENDAR)
+        convention = self.get(fl.ACCRUAL_DAY_CONVENTION)
         termination_convention = self.get(fl.TERMINATION_DAY_CONVENTION, convention)
         end_of_month = self.get(fl.END_OF_MONTH, True)
 
@@ -39,7 +39,6 @@ class DepositRateHelperCreator(CreatorBase):
     _templates = [Template.CRV_INST_GOVT_ZCB]
     _req_fields = [fl.ISSUE_DATE, fl.MATURITY_DATE, fl.COUPON, fl.PRICE, fl.CURRENCY]
     _opt_fields = []
-    _convention_keys = [fl.CURRENCY]
 
     def _create(self, data, asof_date):
         rate = self.get(fl.YIELD)
@@ -47,11 +46,11 @@ class DepositRateHelperCreator(CreatorBase):
 
         settlement_days = self.get(fl.SETTLEMENT_DAYS)
         day_count = self.get(fl.ACCRUAL_BASIS)
-        convention = self.get(fl.ACCRUAL_DAY_CONVENTION, ql.Following)
-        calendar = self.get(fl.CALENDAR, ql.UnitedStates())
+        convention = self.get(fl.ACCRUAL_DAY_CONVENTION)
+        calendar = self.get(fl.ACCRUAL_CALENDAR)
         days = day_count.dayCount(asof_date, maturity_date)
         tenor = ql.Period(days, ql.Days)
-        end_of_month = self.get(fl.END_OF_MONTH, True)
+        end_of_month = self.get(fl.END_OF_MONTH)
 
         depo_rate_helper = ql.DepositRateHelper(
             ql.QuoteHandle(ql.SimpleQuote(rate/100.0)),
@@ -69,7 +68,6 @@ class BondRateHelperCreator(CreatorBase):
     _templates = [Template.CRV_INST_GOVT_BOND]
     _req_fields = [fl.ISSUE_DATE, fl.MATURITY_DATE, fl.COUPON, fl.COUPON_FREQ, fl.PRICE, fl.CURRENCY]
     _opt_fields = []
-    _convention_keys = [fl.CURRENCY]
 
     def _create(self, data, asof_date):
         schedule = ScheduleCreator(data).create(asof_date)
@@ -96,7 +94,6 @@ class BondYieldCurveCreator(CreatorBase):
     _templates = [Template.TS_YIELD_BOND]
     _req_fields = [fl.INSTRUMENT_COLLECTION, fl.ASOF_DATE, fl.COUNTRY, fl.CURRENCY]
     _opt_fields = [fl.INTERPOLATION_METHOD]
-    _convention_keys = [fl.COUNTRY]
     _values = {fl.INTERPOLATION_METHOD.id: ["LinearZero", "CubicZero", "FlatForward",
                                             "LinearForward", "LogCubicDiscount"]}
 

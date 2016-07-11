@@ -1,4 +1,19 @@
-from qtk.common import DataType as D, FieldName
+from qtk.common import DataType as D, NameBase
+
+
+class FieldName(NameBase):
+    _id_map = {}
+
+    def __init__(self, name, desc, data_type):
+        super(FieldName, self).__init__(name, desc=desc)
+        self._data_type = data_type
+
+    @property
+    def data_type(self):
+        return self._data_type
+
+    def check_type(self, value):
+        return isinstance(value, self._data_type.type)
 
 
 class Field(object):
@@ -10,7 +25,6 @@ class Field(object):
 
     ASOF_DATE = FieldName("As Of Date", "Reference date or as of date", D.DATE)
     ASSET_CLASS = FieldName("Asset Class", "Asset class of a security", D.STRING)
-    CALENDAR = FieldName("Calendar", "Calendar", D.CALENDAR)
     COMPOUNDING = FieldName("Compounding", "Compounding", D.COMPOUNDING)
     COMPOUNDING_FREQ = FieldName("Compounding Frequency", "Compounding Frequency", D.FREQUENCY)
     CONVENTIONS = FieldName("Conventions", "Conventions for instruments, models or indices", D.DICT)
