@@ -1,4 +1,4 @@
-from qtk.common import TemplateBase, NameBase, Category
+from qtk.common import TemplateBase, NameBase, Category as C
 from qtk.fields import Field as F
 
 
@@ -38,13 +38,14 @@ class Instrument(NameBase, TemplateBase):
 
 
 class Template(object):
-    INST_GOVT_ZCB = Instrument("", Category.FIXED_INCOME, Category.GOVERNMENT, Category.ZCB)
-    INST_GOVT_BOND = Instrument("", Category.FIXED_INCOME, Category.GOVERNMENT, Category.BOND)
+    INST_GOVT_ZCB = Instrument("", C.FIXED_INCOME, C.GOVERNMENT, C.ZCB)
+    INST_GOVT_BOND = Instrument("", C.FIXED_INCOME, C.GOVERNMENT, C.BOND)
 
-    CRV_INST_GOVT_ZCB = Instrument("Curve Member", Category.FIXED_INCOME, Category.GOVERNMENT, Category.ZCB)
-    CRV_INST_GOVT_BOND = Instrument("Curve Member",Category.FIXED_INCOME, Category.GOVERNMENT, Category.BOND)
+    CRV_INST_GOVT_ZCB = Instrument("Curve Member", C.FIXED_INCOME, C.GOVERNMENT, C.ZCB)
+    CRV_INST_GOVT_BOND = Instrument("Curve Member",C.FIXED_INCOME, C.GOVERNMENT, C.BOND)
 
-    TS_YIELD_BOND = GenericTemplate("Bond Curve", prefix=Category.TERM_STRUCTURE.id,
-                                    category=Category.YIELD)
-    SCHEDULE = GenericTemplate("Schedule", prefix=Category.TIME.id, category=None)
+    TS_YIELD_BOND = GenericTemplate("Bond Curve", prefix=C.TERM_STRUCTURE.id, category=C.YIELD)
+    TS_YIELD_ZERO = GenericTemplate("Zero Curve", prefix=C.TERM_STRUCTURE.id, category=C.YIELD)
+    TS_YIELD_DISCOUNT = GenericTemplate("Discount Curve", prefix=C.TERM_STRUCTURE.id, category=C.YIELD)
+    SCHEDULE = GenericTemplate("Schedule", prefix=C.TIME.id, category=None)
 

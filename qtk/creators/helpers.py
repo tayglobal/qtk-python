@@ -1,30 +1,28 @@
-from qtk.fields import Field as fl
+from qtk.fields import Field as F
 import QuantLib as ql
-from qtk.common import Category
+from qtk.common import Category as C
 from qtk.templates import Instrument
 from .common import CreatorBase
-from qtk.templates import Template
+from qtk.templates import Template as T
 from . import _creatorslog
+from .utils import ScheduleCreator
 
 
-class ScheduleCreator(CreatorBase):
-    _templates = [Template.SCHEDULE]
-    _req_fields = [fl.ISSUE_DATE, fl.MATURITY_DATE, fl.COUPON_FREQ]
+class DepositRateHelperCreator(CreatorBase):
+    _templates = [T.CRV_INST_GOVT_ZCB]
+    _req_fields = [F.ISSUE_DATE, F.MATURITY_DATE, F.COUPON, F.PRICE, F.CURRENCY]
     _opt_fields = []
 
-    def _create(self, data, asof_date):
+    def _bond_schedule(self):
+        maturity_date = self.get(F.MATURITY_DATE)
+        asof_date = self.get(F.ASOF_DATE)
+        period = ql.Period(1, ql.Years)
+        calendar = self.get(F.ACCRUAL_CALENDAR)
+        convention = self.get(F.ACCRUAL_DAY_CONVENTION)
+        termination_convention = self.get(F.TERMINATION_DAY_CONVENTION, convention)
+        end_of_month = self.get(F.END_OF_MONTH, True)
 
-        maturity_date = self.get(fl.MATURITY_DATE)
-        issue_date = self.get(fl.ISSUE_DATE) or self.get(fl.ASOF_DATE)
-        #asof_date = asof_date
-        coupon_freq = self.get(fl.COUPON_FREQ)
-        period = ql.Period(coupon_freq)
-        calendar = self.get(fl.ACCRUAL_CALENDAR)
-        convention = self.get(fl.ACCRUAL_DAY_CONVENTION)
-        termination_convention = self.get(fl.TERMINATION_DAY_CONVENTION, convention)
-        end_of_month = self.get(fl.END_OF_MONTH, True)
-
-        schedule = ql.Schedule(issue_date,
+        schedule = ql.Schedule(asof_date,
                                maturity_date,
                                period,
                                calendar,
@@ -34,26 +32,48 @@ class ScheduleCreator(CreatorBase):
                                end_of_month)
         return schedule
 
+    def _create(self, asof_date):
+        schedule = self._bond_schedule()
+        face_amount = self.get(F.FACE_AMOUNT, 100.0)
+        settlement_days = self.get(F.SETTLEMENT_DAYS)
+        day_count = self.get(F.ACCRUAL_BASIS)
+        convention = self.get(F.ACCRUAL_DAY_CONVENTION)
+        maturity_date = self.get(F.MATURITY_DATE)
+        asof_date = self.get(F.ASOF_DATE)
 
-class DepositRateHelperCreator(CreatorBase):
-    _templates = [Template.CRV_INST_GOVT_ZCB]
-    _req_fields = [fl.ISSUE_DATE, fl.MATURITY_DATE, fl.COUPON, fl.PRICE, fl.CURRENCY]
-    _opt_fields = []
+        price = self.get(F.PRICE)
+        rate = self.get(F.YIELD)
+        if (price is None) and (rate is not None):
+            price = face_amount*(1.0 - rate*day_count.yearFraction(asof_date, maturity_date))
 
-    def _create(self, data, asof_date):
-        rate = self.get(fl.YIELD)
-        maturity_date = self.get(fl.MATURITY_DATE)
+        coupon = 0.0
+        bond_helper = ql.FixedRateBondHelper(
+            ql.QuoteHandle(ql.SimpleQuote(price)),
+            settlement_days,
+            face_amount,
+            schedule,
+            [coupon],
+            day_count,
+            convention
+        )
+        return bond_helper
 
-        settlement_days = self.get(fl.SETTLEMENT_DAYS)
-        day_count = self.get(fl.ACCRUAL_BASIS)
-        convention = self.get(fl.ACCRUAL_DAY_CONVENTION)
-        calendar = self.get(fl.ACCRUAL_CALENDAR)
+
+
+    def _create_deporates(self, asof_date):
+        rate = self.get(F.YIELD)
+        maturity_date = self.get(F.MATURITY_DATE)
+
+        settlement_days = self.get(F.SETTLEMENT_DAYS)
+        day_count = self.get(F.ACCRUAL_BASIS)
+        convention = self.get(F.ACCRUAL_DAY_CONVENTION)
+        calendar = self.get(F.ACCRUAL_CALENDAR)
         days = day_count.dayCount(asof_date, maturity_date)
         tenor = ql.Period(days, ql.Days)
-        end_of_month = self.get(fl.END_OF_MONTH)
+        end_of_month = self.get(F.END_OF_MONTH)
 
         depo_rate_helper = ql.DepositRateHelper(
-            ql.QuoteHandle(ql.SimpleQuote(rate/100.0)),
+            ql.QuoteHandle(ql.SimpleQuote(rate)),
             tenor,
             settlement_days,
             calendar,
@@ -65,36 +85,47 @@ class DepositRateHelperCreator(CreatorBase):
 
 
 class BondRateHelperCreator(CreatorBase):
-    _templates = [Template.CRV_INST_GOVT_BOND]
-    _req_fields = [fl.ISSUE_DATE, fl.MATURITY_DATE, fl.COUPON, fl.COUPON_FREQ, fl.PRICE, fl.CURRENCY]
+    _templates = [T.CRV_INST_GOVT_BOND]
+    _req_fields = [F.ISSUE_DATE, F.MATURITY_DATE, F.COUPON, F.COUPON_FREQ, F.PRICE, F.CURRENCY]
     _opt_fields = []
 
-    def _create(self, data, asof_date):
-        schedule = ScheduleCreator(data).create(asof_date)
-        face_amount = self.get(fl.FACE_AMOUNT, 100.0)
-        settlement_days = self.get(fl.SETTLEMENT_DAYS)
-        day_count = self.get(fl.ACCRUAL_BASIS)
-        convention = self.get(fl.ACCRUAL_DAY_CONVENTION)
-        price = self.get(fl.PRICE)
-        coupon = self.get(fl.COUPON)
+    def _create(self, asof_date):
+        schedule = ScheduleCreator(self.data).create(asof_date)
+        face_amount = self.get(F.FACE_AMOUNT, 100.0)
+        settlement_days = self.get(F.SETTLEMENT_DAYS)
+        pay_basis = self.get(F.PAYMENT_BASIS) or self.get(F.ACCRUAL_BASIS)
+        pay_convention = self.get(F.PAYMENT_DAY_CONVENTION) or self.get(F.ACCRUAL_DAY_CONVENTION)
+        accrual_convention = self.get(F.ACCRUAL_DAY_CONVENTION)
+        price = self.get(F.PRICE)
+        coupon = self.get(F.COUPON)
+        pay_calendar = self.get(F.PAYMENT_CALENDAR) or self.get(F.ACCRUAL_CALENDAR)
+        dirty_price = self.get(F.DIRTY_PRICE, True)
         bond_helper = ql.FixedRateBondHelper(
             ql.QuoteHandle(ql.SimpleQuote(price)),
             settlement_days,
             face_amount,
             schedule,
-            [coupon/100.0],
-            day_count,
-            convention
+            [coupon],
+            pay_basis,
+            pay_convention,
+            face_amount,
+            ql.Date(),
+            pay_calendar,
+            ql.Period(),
+            pay_calendar,
+            pay_convention,
+            False,
+            dirty_price
         )
         return bond_helper
 
 
 class BondYieldCurveCreator(CreatorBase):
     # required fields
-    _templates = [Template.TS_YIELD_BOND]
-    _req_fields = [fl.INSTRUMENT_COLLECTION, fl.ASOF_DATE, fl.COUNTRY, fl.CURRENCY]
-    _opt_fields = [fl.INTERPOLATION_METHOD]
-    _values = {fl.INTERPOLATION_METHOD.id: ["LinearZero", "CubicZero", "FlatForward",
+    _templates = [T.TS_YIELD_BOND]
+    _req_fields = [F.INSTRUMENT_COLLECTION, F.ASOF_DATE, F.COUNTRY, F.CURRENCY]
+    _opt_fields = [F.INTERPOLATION_METHOD, F.DISCOUNT_BASIS, F.SETTLEMENT_DAYS, F.DISCOUNT_CALENDAR]
+    _values = {F.INTERPOLATION_METHOD.id: ["LinearZero", "CubicZero", "FlatForward",
                                             "LinearForward", "LogCubicDiscount"]}
 
     # class data
@@ -106,30 +137,57 @@ class BondYieldCurveCreator(CreatorBase):
         "LogCubicDiscount": ql.PiecewiseLogCubicDiscount
     }
 
-    def _create(self, data, asof_date):
-        curve_members = data[fl.INSTRUMENT_COLLECTION.id]
-        rate_helpers = []
-        intepolator = data.get(fl.INTERPOLATION_METHOD.id, "LinearZero")
-        for c in curve_members:
-            instance = c.get(fl.TEMPLATE.id)
-            loc_asof_date = self.get(fl.ASOF_DATE, asof_date)
-            try:
-                if isinstance(instance, Instrument) and (instance.security_subtype == Category.ZCB):
-                    depo_rate_helper = DepositRateHelperCreator(c).create(loc_asof_date)
-                    rate_helpers.append(depo_rate_helper)
-                elif isinstance(instance, Instrument) and (instance.security_subtype == Category.BOND):
-                    bond_rate_helper = BondRateHelperCreator(c).create(loc_asof_date)
-                    rate_helpers.append(bond_rate_helper)
-            except Exception as e:
-                _creatorslog.exception(e)
+    def _create(self, asof_date):
+        curve_members = self.get(F.INSTRUMENT_COLLECTION)
+        if curve_members:
+            rate_helpers = []
+            intepolator = self.get(F.INTERPOLATION_METHOD, "LinearZero")
+            for c in curve_members:
+                instance = c.get(F.TEMPLATE.id)
+                loc_asof_date = c.get(F.ASOF_DATE.id, asof_date)
+                try:
+                    if isinstance(instance, Instrument) and (instance.security_subtype == C.ZCB):
+                        depo_rate_helper = DepositRateHelperCreator(c).create(loc_asof_date)
+                        #depo_rate_helper = BondRateHelperCreator(c).create(loc_asof_date)
+                        rate_helpers.append(depo_rate_helper)
+                    elif isinstance(instance, Instrument) and (instance.security_subtype == C.BOND):
+                        bond_rate_helper = BondRateHelperCreator(c).create(loc_asof_date)
+                        rate_helpers.append(bond_rate_helper)
+                except Exception as e:
+                    _creatorslog.exception(e)
 
-        day_count = ql.Actual360()
+            day_count = self.get(F.DISCOUNT_BASIS)
+            # settle_days = self.get(F.SETTLEMENT_DAYS)
+            # calendar = self.get(F.DISCOUNT_CALENDAR)
+            yc_method = self._interpolator_map[intepolator]
+            yc_curve = yc_method(
+                asof_date, rate_helpers,
+                day_count, [], []
+            )
+            yc_curve.enableExtrapolation()
+            return yc_curve
+        else:
+            raise KeyError("Missing elements for key "+F.INSTRUMENT_COLLECTION.id)
 
-        yc_method = self._interpolator_map[intepolator]
-        yc_curve = yc_method(
-            asof_date,
-            rate_helpers,
-            day_count
-        )
 
-        return yc_curve
+class ZeroCurveCreator(CreatorBase):
+    _templates = [T.TS_YIELD_ZERO]
+    _req_fields = [F.LIST_OF_DATES, F.LIST_OF_ZERO_RATES, F.DISCOUNT_BASIS]
+    _opt_fields = [F.DISCOUNT_CALENDAR, F.COMPOUNDING, F.COMPOUNDING_FREQ]
+
+    def _create(self, asof_date):
+        dates = self.get(F.LIST_OF_DATES)
+        zero_rates = self.get(F.LIST_OF_ZERO_RATES)
+        discount_basis = self.get(F.DISCOUNT_BASIS)
+
+        discount_calendar = self.get(F.DISCOUNT_CALENDAR) or ql.TARGET()
+        compounding = self.get(F.COMPOUNDING) or ql.Continuous
+        frequency = self.get(F.COMPOUNDING_FREQ) or ql.Annual
+
+        zero_curve = ql.ZeroCurve(dates, zero_rates, discount_basis, discount_calendar,
+                                  ql.Linear(), compounding, frequency)
+        zero_curve.enableExtrapolation()
+        return zero_curve
+
+
+

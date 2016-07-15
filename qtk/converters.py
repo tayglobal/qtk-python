@@ -3,9 +3,7 @@ import datetime
 from dateutil.parser import parse
 
 
-
 class QuantLibConverter(object):
-
     _daycount_map = {
         "ACT/ACT": ql.ActualActual(),
         "ACTUAL/ACTUAL": ql.ActualActual(),
@@ -203,3 +201,15 @@ class QuantLibConverter(object):
                 raise ValueError("Invalid compounding value")
         else:
             raise ValueError("Unsupported data type for compounding convention")
+
+    @classmethod
+    def to_period(cls, period):
+        if isinstance(period, ql.Period):
+            return period
+        elif isinstance(period, str):
+            period = ql.Period(period)
+            return period
+
+
+
+

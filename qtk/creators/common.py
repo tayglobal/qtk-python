@@ -102,7 +102,7 @@ class CreatorBase(object):
         _conventions = self._data.get("Conventions")
         self._conventions = _conventions or self.get_global_convention()
         self._conventions = self._conventions or {}  # default to empty dict if global conventions missing
-        obj = self._create(self._data, asof_date)
+        obj = self._create(asof_date)
         self._data["Object"] = obj
         return obj
 
@@ -114,3 +114,7 @@ class CreatorBase(object):
         conventions = self._conventions.get(field_id)
         return self._data.get(field_id, conventions) if default_value is None \
             else self._data.get(field_id, default_value)
+
+    @property
+    def data(self):
+        return self._data

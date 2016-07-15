@@ -22,4 +22,7 @@ class Controller(object):
         if parse:
             self.parse()
 
-        return [c.create(asof_date) for c in self._creators]
+        for c in self._creators:
+            c.create(asof_date)
+
+        return self._data

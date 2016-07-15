@@ -11,7 +11,7 @@ _govt_bonds = dict.fromkeys([
     F.COUPON_FREQ.id: ql.Semiannual,
     F.ACCRUAL_BASIS.id: ql.ActualActual(ql.ActualActual.Bond),
     F.ACCRUAL_DAY_CONVENTION.id: ql.Following,
-    F.ACCRUAL_CALENDAR.id: ql.UnitedStates(),
+    F.ACCRUAL_CALENDAR.id: ql.UnitedStates(ql.UnitedStates.GovernmentBond),
     F.END_OF_MONTH.id: True,
     F.COMPOUNDING.id: ql.Compounded,
     F.SETTLEMENT_DAYS.id: 1,
@@ -28,7 +28,7 @@ _govt_bonds.update(
     ], {
         F.ACCRUAL_BASIS.id: ql.Actual360(),
         F.ACCRUAL_DAY_CONVENTION.id: ql.Following,
-        F.ACCRUAL_CALENDAR.id: ql.UnitedStates(),
+        F.ACCRUAL_CALENDAR.id: ql.UnitedStates(ql.UnitedStates.GovernmentBond),
         F.END_OF_MONTH.id: True,
         F.COMPOUNDING.id: ql.Simple,
         F.SETTLEMENT_DAYS.id: 0,

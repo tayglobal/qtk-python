@@ -30,7 +30,7 @@ class IRCurveData(object):
         output = self._blp.send_request(request_handler, self._hist_price_event_handler, output=output)
 
         curve_date_py = qlf.to_date_py(curve_date)
-        output[fl.ASOF_DATE.id]  = curve_date_py.strftime("%Y-%m-%d")
+        output[fl.ASOF_DATE.id] = curve_date_py.strftime("%Y-%m-%d")
         output[fl.DATA_SOURCE.id] = "BBG-BLPAPI"
         output[fl.TEMPLATE.id] = Template.TS_YIELD_BOND.id
         return output

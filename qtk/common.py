@@ -4,13 +4,13 @@ from .converters import QuantLibConverter as qlf
 
 class TemplateBase(object):
     _inst_map = {}
-    _creator = None
 
     def __init__(self, prefix, convention_keys):
         self._instance_name = prefix
         self._iid = NameBase.toid(prefix)
         self._inst_map[self._instance_name] = self.__class__
         self._convention_keys = convention_keys
+        self._creator = None
 
     @property
     def instance_name(self):
@@ -30,13 +30,16 @@ class TemplateBase(object):
         c = cls._inst_map[c_name]
         return getattr(c, "lookup")(field_id)
 
-    @classmethod
-    def get_creator(cls):
-        return cls._creator
+    def get_creator(self):
+        return self._creator
 
-    @classmethod
-    def _set_creator(cls, creator):
-        cls._creator = creator
+    def _set_creator(self, creator):
+        if self._creator is None:
+            self._creator = creator
+        else:
+            raise ValueError("Creator %s attempted to overwrite creator %s in template %s" %(
+                creator.__class__.__name__, self._creator.__class__.__name__
+            ))
 
     def get_convention_keys(self):
         return self._convention_keys
@@ -94,14 +97,36 @@ class TypeName(NameBase):
         super(TypeName, self).__init__(name)
         self._type = type
         self._converter = converter
+        self._outer = self
+        self._inner = None
 
     @property
     def type(self):
         return self._type
 
     def convert(self, value):
-        return self._converter(value)
+        value = self._converter(value)
+        return value
 
+
+class TypeNameModifier(TypeName):
+
+    def __call__(self, type_name, converter):
+        assert(isinstance(type_name, TypeName) == True)
+        new_type = TypeName("%s(%s)"%(self.name, type_name.name), self.type, converter)
+        new_type._outer = self
+        new_type._inner = type_name
+        return new_type
+
+
+def to_list(element_converter):
+    def to_list_func(value):
+
+        value = [element_converter(v) for v in value]
+        return value
+    return to_list_func
+
+_LIST = TypeNameModifier("List Of", list, list)
 
 class DataType(object):
     TEMPLATE = TypeName("Template", TemplateBase, qlf.to_template)
@@ -109,16 +134,21 @@ class DataType(object):
     FLOAT = TypeName("Float", float, float)
     STRING = TypeName("String", str, str)
     BOOL = TypeName("Boolean", bool, bool)
+    DICT = TypeName("Dict", dict, dict)
     LIST = TypeName("List", list, list)
-    DICT = TypeName("Dictionary", dict, dict)
-    OBJECT = TypeName("Object", object, lambda x: x)
 
+    OBJECT = TypeName("Object", object, lambda x: x)
     COMPOUNDING = TypeName("Compounding", int, qlf.to_compounding )
     DATE = TypeName("Date", ql.Date, qlf.to_date)
     FREQUENCY = TypeName("Frequency", int, qlf.to_frequency)  # this is enum for frequency
     DAYCOUNT = TypeName("Day Count", ql.DayCounter, qlf.to_daycount)
     DAY_CONVENTION = TypeName("Day Convention", int, qlf.to_day_convention)  # this is enum for day convention
     CALENDAR = TypeName("Calendar", ql.Calendar, qlf.to_calendar)
+    PERIOD = TypeName("Period", ql.Period, qlf.to_period)
+
+    LIST_INT = _LIST(INT, to_list(int))
+    LIST_DATE = _LIST(DATE, to_list(qlf.to_date))
+    LIST_FLOAT = _LIST(FLOAT, to_list(float))
 
 
 class CategoryName(NameBase):

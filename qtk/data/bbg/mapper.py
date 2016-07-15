@@ -4,6 +4,8 @@ from qtk.common import DataType as dt
 from qtk.converters import QuantLibConverter as qlf
 from qtk.templates import Template as tmpl
 
+# TODO: Scale coupon and yield by 100 to get all in fraction
+
 __field_list_pair = [
     ("BPIPE_REFERENCE_SECURITY_CLASS", fl.ASSET_CLASS),
     ("CPN", fl.COUPON),
