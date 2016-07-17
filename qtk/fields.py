@@ -63,7 +63,7 @@ class Field(object):
     MATURITY_DATE = FieldName("Maturity Date", "Maturity date of a security", D.DATE)
     OBJECT = FieldName("Object", "Instantiation of a QuantLib class",
                        D.OBJECT)  # hardcoded field in creators/common; do not change
-    OBJECT_ID = FieldName("Object Id", "ID of a QuantLib object", D.STRING)
+    OBJECT_ID = FieldName("Object ID", "ID of a QuantLib object", D.STRING)
 
     PAYMENT_BASIS = FieldName("Payment Basis", "Payment Basis", D.DAYCOUNT)
     PAYMENT_CALENDAR = FieldName("Payment Calendar", "Payment Calendar", D.CALENDAR)

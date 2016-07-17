@@ -7,9 +7,10 @@ from qtk.templates import Template as T
 from . import _creatorslog
 from .utils import ScheduleCreator
 
+# Fill the req and opt fields properly
 
 class FixedRateBondCreator(CreatorBase):
-    _templates = [T.INST_GOVT_BOND, T.CRV_INST_GOVT_BOND]
+    _templates = [T.INST_BOND_TBOND, T.INST_BOND_TBOND_HELPER]
     _req_fields = [F.SETTLEMENT_DAYS]
     _opt_fields = []
 
@@ -47,7 +48,7 @@ class FixedRateBondCreator(CreatorBase):
 
 
 class ZeroCouponBondCreator(CreatorBase):
-    _templates = [T.CRV_INST_GOVT_ZCB, T.INST_GOVT_ZCB]
+    _templates = [T.INST_BOND_TBILL_HELPER, T.INST_BOND_TBILL]
 
     def _create(self, asof_date):
         settlement_days = self.get(F.SETTLEMENT_DAYS)

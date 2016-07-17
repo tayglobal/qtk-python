@@ -9,7 +9,7 @@ from .utils import ScheduleCreator
 
 
 class DepositRateHelperCreator(CreatorBase):
-    _templates = [T.CRV_INST_GOVT_ZCB]
+    _templates = [T.INST_BOND_TBILL_HELPER]
     _req_fields = [F.ISSUE_DATE, F.MATURITY_DATE, F.COUPON, F.PRICE, F.CURRENCY]
     _opt_fields = []
 
@@ -85,7 +85,7 @@ class DepositRateHelperCreator(CreatorBase):
 
 
 class BondRateHelperCreator(CreatorBase):
-    _templates = [T.CRV_INST_GOVT_BOND]
+    _templates = [T.INST_BOND_TBOND_HELPER]
     _req_fields = [F.ISSUE_DATE, F.MATURITY_DATE, F.COUPON, F.COUPON_FREQ, F.PRICE, F.CURRENCY]
     _opt_fields = []
 
@@ -140,25 +140,14 @@ class BondYieldCurveCreator(CreatorBase):
     def _create(self, asof_date):
         curve_members = self.get(F.INSTRUMENT_COLLECTION)
         if curve_members:
-            rate_helpers = []
             intepolator = self.get(F.INTERPOLATION_METHOD, "LinearZero")
-            for c in curve_members:
-                instance = c.get(F.TEMPLATE.id)
-                loc_asof_date = c.get(F.ASOF_DATE.id, asof_date)
-                try:
-                    if isinstance(instance, Instrument) and (instance.security_subtype == C.ZCB):
-                        depo_rate_helper = DepositRateHelperCreator(c).create(loc_asof_date)
-                        #depo_rate_helper = BondRateHelperCreator(c).create(loc_asof_date)
-                        rate_helpers.append(depo_rate_helper)
-                    elif isinstance(instance, Instrument) and (instance.security_subtype == C.BOND):
-                        bond_rate_helper = BondRateHelperCreator(c).create(loc_asof_date)
-                        rate_helpers.append(bond_rate_helper)
-                except Exception as e:
-                    _creatorslog.exception(e)
+
+            templates = [c[F.TEMPLATE.id] for c in curve_members]
+            creators = [t.get_creator()(curve_members[i]) for i, t in enumerate(templates)]
+            rate_helpers = [c.create(asof_date) for c in creators]
 
             day_count = self.get(F.DISCOUNT_BASIS)
-            # settle_days = self.get(F.SETTLEMENT_DAYS)
-            # calendar = self.get(F.DISCOUNT_CALENDAR)
+
             yc_method = self._interpolator_map[intepolator]
             yc_curve = yc_method(
                 asof_date, rate_helpers,

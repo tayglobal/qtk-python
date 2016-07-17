@@ -167,6 +167,7 @@ class Category(object):
     VOLATILITY = CategoryName("Volatility")
     YIELD = CategoryName("Yield")
 
+
     # Asset names
     FIXED_INCOME = CategoryName("FI", "Fixed Income")
     EQUITY = CategoryName("EQ", "Equity")
@@ -179,6 +180,10 @@ class Category(object):
     BOND = CategoryName("Bond")
     ZCB = CategoryName("ZCB", "Zero Coupon Bond")
 
+    MAIN = CategoryName("Main", "A generic category name" )
+
     # Other category headings
     TIME = CategoryName("Time", "Time module")
+    ENGINE = CategoryName("Engine", "Engine module")
+    INSTRUMENT = CategoryName("Instrument", "Instrument module")
 

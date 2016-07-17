@@ -5,8 +5,8 @@ import QuantLib as ql
 # http://help.derivativepricing.com/1571.htm
 # USD
 _govt_bonds = dict.fromkeys([
-    "USD."+T.INST_GOVT_BOND.id,
-    "USD."+T.CRV_INST_GOVT_BOND.id
+    "USD."+T.INST_BOND_TBOND.id,
+    "USD."+T.INST_BOND_TBOND_HELPER.id
 ], {
     F.COUPON_FREQ.id: ql.Semiannual,
     F.ACCRUAL_BASIS.id: ql.ActualActual(ql.ActualActual.Bond),
@@ -23,8 +23,8 @@ _govt_bonds = dict.fromkeys([
 
 _govt_bonds.update(
     dict.fromkeys([
-        "USD." + T.INST_GOVT_ZCB.id,
-        "USD." + T.CRV_INST_GOVT_ZCB.id,
+        "USD." + T.INST_BOND_TBILL.id,
+        "USD." + T.INST_BOND_TBILL_HELPER.id,
     ], {
         F.ACCRUAL_BASIS.id: ql.Actual360(),
         F.ACCRUAL_DAY_CONVENTION.id: ql.Following,

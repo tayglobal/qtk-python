@@ -7,8 +7,8 @@ class GenericTemplate(NameBase, TemplateBase):
 
     def __init__(self, name,  prefix, category=None, convention_keys=(F.CURRENCY,)):
         name_id = "%s.%s" % (category.id, self.toid(name)) if category else self.toid(name)
-        super(GenericTemplate, self).__init__(name, name_id=name_id, prefix=prefix)
-        TemplateBase.__init__(self, prefix, convention_keys)
+        super(GenericTemplate, self).__init__(name, name_id=name_id, prefix=prefix.id)
+        TemplateBase.__init__(self, prefix.id, convention_keys)
 
 
 class Instrument(NameBase, TemplateBase):
@@ -38,14 +38,20 @@ class Instrument(NameBase, TemplateBase):
 
 
 class Template(object):
-    INST_GOVT_ZCB = Instrument("", C.FIXED_INCOME, C.GOVERNMENT, C.ZCB)
-    INST_GOVT_BOND = Instrument("", C.FIXED_INCOME, C.GOVERNMENT, C.BOND)
 
-    CRV_INST_GOVT_ZCB = Instrument("Curve Member", C.FIXED_INCOME, C.GOVERNMENT, C.ZCB)
-    CRV_INST_GOVT_BOND = Instrument("Curve Member",C.FIXED_INCOME, C.GOVERNMENT, C.BOND)
+    INST_BOND_TBOND = GenericTemplate("Treasury Bond", prefix=C.INSTRUMENT, category=C.BOND)
+    INST_BOND_TBILL = GenericTemplate("Treasury Bill", prefix=C.INSTRUMENT, category=C.BOND)
 
-    TS_YIELD_BOND = GenericTemplate("Bond Curve", prefix=C.TERM_STRUCTURE.id, category=C.YIELD)
-    TS_YIELD_ZERO = GenericTemplate("Zero Curve", prefix=C.TERM_STRUCTURE.id, category=C.YIELD)
-    TS_YIELD_DISCOUNT = GenericTemplate("Discount Curve", prefix=C.TERM_STRUCTURE.id, category=C.YIELD)
-    SCHEDULE = GenericTemplate("Schedule", prefix=C.TIME.id, category=None)
+    # Instrument Helpers in Building Term Structures
+    INST_BOND_TBOND_HELPER = GenericTemplate("Treasury Bond Helper", prefix=C.INSTRUMENT, category=C.BOND)
+    INST_BOND_TBILL_HELPER = GenericTemplate("Treasury Bill Helper", prefix=C.INSTRUMENT, category=C.BOND)
+
+    TS_YIELD_BOND = GenericTemplate("Bond Curve", prefix=C.TERM_STRUCTURE, category=C.YIELD)
+    TS_YIELD_ZERO = GenericTemplate("Zero Curve", prefix=C.TERM_STRUCTURE, category=C.YIELD)
+    TS_YIELD_DISCOUNT = GenericTemplate("Discount Curve", prefix=C.TERM_STRUCTURE, category=C.YIELD)
+
+    ENG_BOND_DISCOUNTING = GenericTemplate("Discounting", prefix=C.ENGINE, category=C.BOND)
+
+
+    TIME_MAIN_SCHEDULE = GenericTemplate("Schedule", prefix=C.TIME, category=C.MAIN)
 

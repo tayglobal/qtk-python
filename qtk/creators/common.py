@@ -104,9 +104,11 @@ class CreatorBase(object):
         self._conventions = self._conventions or {}  # default to empty dict if global conventions missing
         obj = self._create(asof_date)
         self._data["Object"] = obj
+        if self._data.get("ObjectId") is None:
+            self._data["ObjectId"] = id(obj)
         return obj
 
-    def _create(self, data, asof_date=None, conventions=None):
+    def _create(self, asof_date=None):
         raise NotImplementedError("Missing method _create for Creator " + self.__class__.__name__)
 
     def get(self, field, default_value=None):

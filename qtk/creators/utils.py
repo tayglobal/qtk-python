@@ -5,7 +5,7 @@ import QuantLib as ql
 
 
 class ScheduleCreator(CreatorBase):
-    _templates = [T.SCHEDULE]
+    _templates = [T.TIME_MAIN_SCHEDULE]
     _req_fields = [F.ISSUE_DATE, F.MATURITY_DATE, F.COUPON_FREQ]
     _opt_fields = []
 
