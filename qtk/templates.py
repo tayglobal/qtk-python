@@ -5,10 +5,10 @@ from qtk.fields import Field as F
 class GenericTemplate(NameBase, TemplateBase):
     _id_map = {}
 
-    def __init__(self, name,  prefix, category=None, convention_keys=(F.CURRENCY,)):
-        name_id = "%s.%s" % (category.id, self.toid(name)) if category else self.toid(name)
-        super(GenericTemplate, self).__init__(name, name_id=name_id, prefix=prefix.id)
-        TemplateBase.__init__(self, prefix.id, convention_keys)
+    def __init__(self, name, category, sub_category=C.MAIN, convention_keys=(F.CURRENCY,)):
+        name_id = "%s.%s" % (sub_category.id, self.toid(name))
+        super(GenericTemplate, self).__init__(name, name_id=name_id, prefix=category.id)
+        TemplateBase.__init__(self, category.id, convention_keys)
 
 
 class Instrument(NameBase, TemplateBase):
@@ -38,20 +38,22 @@ class Instrument(NameBase, TemplateBase):
 
 
 class Template(object):
-
-    INST_BOND_TBOND = GenericTemplate("Treasury Bond", prefix=C.INSTRUMENT, category=C.BOND)
-    INST_BOND_TBILL = GenericTemplate("Treasury Bill", prefix=C.INSTRUMENT, category=C.BOND)
+    # Instruments
+    INST_BOND_TBOND = GenericTemplate("Treasury Bond", C.INSTRUMENT, C.BOND)
+    INST_BOND_TBILL = GenericTemplate("Treasury Bill", C.INSTRUMENT, C.BOND)
 
     # Instrument Helpers in Building Term Structures
-    INST_BOND_TBOND_HELPER = GenericTemplate("Treasury Bond Helper", prefix=C.INSTRUMENT, category=C.BOND)
-    INST_BOND_TBILL_HELPER = GenericTemplate("Treasury Bill Helper", prefix=C.INSTRUMENT, category=C.BOND)
+    INST_BOND_TBOND_HELPER = GenericTemplate("Treasury Bond Helper", C.INSTRUMENT, C.BOND)
+    INST_BOND_TBILL_HELPER = GenericTemplate("Treasury Bill Helper", C.INSTRUMENT, C.BOND)
 
-    TS_YIELD_BOND = GenericTemplate("Bond Curve", prefix=C.TERM_STRUCTURE, category=C.YIELD)
-    TS_YIELD_ZERO = GenericTemplate("Zero Curve", prefix=C.TERM_STRUCTURE, category=C.YIELD)
-    TS_YIELD_DISCOUNT = GenericTemplate("Discount Curve", prefix=C.TERM_STRUCTURE, category=C.YIELD)
+    # All Term Structures
+    TS_YIELD_BOND = GenericTemplate("Bond Curve", C.TERM_STRUCTURE, C.YIELD)
+    TS_YIELD_ZERO = GenericTemplate("Zero Curve", C.TERM_STRUCTURE, C.YIELD)
+    TS_YIELD_DISCOUNT = GenericTemplate("Discount Curve", C.TERM_STRUCTURE, C.YIELD)
 
-    ENG_BOND_DISCOUNTING = GenericTemplate("Discounting", prefix=C.ENGINE, category=C.BOND)
+    # All Engines
+    ENG_BOND_DISCOUNTING = GenericTemplate("Discounting", C.ENGINE, C.BOND)
 
-
-    TIME_MAIN_SCHEDULE = GenericTemplate("Schedule", prefix=C.TIME, category=C.MAIN)
+    # Time Module
+    TIME_MAIN_SCHEDULE = GenericTemplate("Schedule", C.TIME, C.MAIN)
 

@@ -129,15 +129,21 @@ class TestCurves(TestCase):
     def test_zero_curve(self):
         data = {
             "ListOfDate": ["7/5/2016", "8/1/2016", "9/1/2016", "10/1/2016"],
-            "ListOfZeroRate": [1.0, 0.99,0.98, 0.97],
+            "ListOfZeroRate": [0.0, 0.001,0.002, 0.003],
             "DiscountBasis": "30/360",
             'Template': 'TermStructure.Yield.ZeroCurve',
-            "Currency": "USD"
+            "Currency": "USD",
+            "DiscountCalendar": "UnitedStates.GovernmentBond"
+
         }
         res = Controller([data])
         asof_date = qlc.to_date("7/5/2016")
 
         ret = res.process(asof_date)
         zcurve = data[Field.OBJECT.id]
-        print ret
+        observed = [zcurve.discount(d) for d in data["ListOfZeroRate"]]
+        expected = [1.0, 0.9999999861538462, 0.9999999446153861, 0.9999998753846231]
+        self.assertListEqual(observed, expected)
+
+
 

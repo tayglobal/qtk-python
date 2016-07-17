@@ -77,7 +77,7 @@ class CreatorBase(object):
     def _check_fields(cls, data):
         missing_fields = list(set(cls.get_req_field_ids()) - set(data.keys()))
         if len(missing_fields):
-            raise AttributeError("Missing fields in " + cls.__class__.__name__ + " data " +
+            raise AttributeError("Missing fields in " + cls.__name__ + " data: " +
                                  ", ".join([mf for mf in missing_fields]))
         return True
 

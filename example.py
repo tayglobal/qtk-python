@@ -1,34 +1,16 @@
-import logging
-from pprint import pprint
+from qtk import Controller, Field as F, Template as T
 
-import QuantLib as ql
+data = {
+    F.LIST_OF_DATES.id: ["7/5/2016", "8/1/2016", "9/1/2016", "10/1/2016"],
+    F.LIST_OF_ZERO_RATES.id: [1.0, 0.99, 0.98, 0.97],
+    F.DISCOUNT_BASIS.id: "30/360",
+    F.TEMPLATE.id: T.TS_YIELD_ZERO,
+    F.CURRENCY.id: "USD",
+    F.DISCOUNT_CALENDAR.id: "UnitedStates.GovernmentBond"
+}
 
-from qtk.data.bbg.requesthandler import BlpapiRequestHandler
-from qtk.data.bbg.ircurves import IRCurveData
-from qtk.controller import Controller
-from qtk.fields import Field
+res = Controller([data])
+asof_date = "7/5/2016"
 
-consoleHandler = logging.StreamHandler()
-logger = logging.getLogger()
-logger.addHandler(consoleHandler)
-
-blp = BlpapiRequestHandler()
-blp.start_session()
-date = ql.Date(14, 6, 2016)
-
-ircurve_data = IRCurveData(blp)
-
-output = ircurve_data.get_govt_curve_members("YCGT0025 Index", date)
-pprint(output)
-
-blp.stop_session()
-
-con = Controller(output)
-con.process(date)
-yc_curve = output[Field.OBJECT.id]
-
-calendar = ql.UnitedStates()
-
-for i in range(121):
-    d = calendar.advance(date, ql.Period(i, ql.Months))
-    print str(i)+"M", d, yc_curve.discount(d)
+ret = res.process(asof_date)
+zcurve = data[F.OBJECT.id]

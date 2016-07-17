@@ -55,6 +55,7 @@ class Field(object):
     EXCOUPON_CALENDAR = FieldName("Ex Coupon Calendar", "Ex Coupon Calendar", D.CALENDAR)
     EXCOUPON_DAY_CONVENTION = FieldName("Ex Coupon Day Convention", "Ex Coupon Day Convention", D.DAY_CONVENTION)
     EXCOUPON_END_OF_MONTH = FieldName("Ex Coupon End Of Month", "Ex Coupon End Of Month", D.BOOL)
+    EXTRAPOLATION = FieldName("Extrapolation", "Enable Extrapolation", D.BOOL)
     FACE_AMOUNT = FieldName("Face Amount", "Face amount", D.FLOAT)
     INTERPOLATION_METHOD = FieldName("Interpolation Method", "Interpolation Method", D.STRING)
     INSTRUMENT_COLLECTION = FieldName("Instrument Collection", "Collection of instruments", D.LIST)

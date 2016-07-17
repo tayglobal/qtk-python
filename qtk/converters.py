@@ -66,11 +66,11 @@ class QuantLibConverter(object):
         "HMMF": ql.HalfMonthModifiedFollowing
     }
 
-
     # TODO: Find a proper way to catalogue this
     _calendar_map = {
         "US": ql.UnitedStates(),
         "UNITEDSTATES": ql.UnitedStates(),
+        "UNITEDSTATES.GOVERNMENTBOND": ql.UnitedStates(ql.UnitedStates.GovernmentBond),
         "GB": ql.UnitedKingdom(),
         "UK": ql.UnitedKingdom(),
         "UNITEDKINGDOM": ql.UnitedKingdom(),

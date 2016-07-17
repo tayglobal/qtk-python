@@ -161,21 +161,23 @@ class BondYieldCurveCreator(CreatorBase):
 
 class ZeroCurveCreator(CreatorBase):
     _templates = [T.TS_YIELD_ZERO]
-    _req_fields = [F.LIST_OF_DATES, F.LIST_OF_ZERO_RATES, F.DISCOUNT_BASIS]
-    _opt_fields = [F.DISCOUNT_CALENDAR, F.COMPOUNDING, F.COMPOUNDING_FREQ]
+    _req_fields = [F.LIST_OF_DATES, F.LIST_OF_ZERO_RATES, F.DISCOUNT_BASIS, F.DISCOUNT_CALENDAR,
+                   ]
+    _opt_fields = [F.COMPOUNDING, F.COMPOUNDING_FREQ, F.EXTRAPOLATION]
 
     def _create(self, asof_date):
         dates = self.get(F.LIST_OF_DATES)
         zero_rates = self.get(F.LIST_OF_ZERO_RATES)
         discount_basis = self.get(F.DISCOUNT_BASIS)
 
-        discount_calendar = self.get(F.DISCOUNT_CALENDAR) or ql.TARGET()
-        compounding = self.get(F.COMPOUNDING) or ql.Continuous
-        frequency = self.get(F.COMPOUNDING_FREQ) or ql.Annual
+        discount_calendar = self.get(F.DISCOUNT_CALENDAR)
+        compounding = self.get(F.COMPOUNDING, ql.Continuous)
+        frequency = self.get(F.COMPOUNDING_FREQ, ql.Annual)
 
         zero_curve = ql.ZeroCurve(dates, zero_rates, discount_basis, discount_calendar,
                                   ql.Linear(), compounding, frequency)
-        zero_curve.enableExtrapolation()
+        if self.get(F.EXTRAPOLATION, True):
+            zero_curve.enableExtrapolation()
         return zero_curve
 
 
