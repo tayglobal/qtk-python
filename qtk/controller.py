@@ -13,10 +13,10 @@ class Controller(object):
         self._data = data if isinstance(data, list) else [data]
         self._graph = nx.DiGraph()
         self._parse_dependency(self._data, self._graph)
-        self._creators = self._compile_creator_list()
+        self._node_creators = self._compile_node_creator_list()
 
     def parse(self):
-        for c in self._creators:
+        for n,c in self._node_creators:
             c.check()
 
     def process(self, asof_date, check=True, parse=True, context=None):
@@ -26,8 +26,13 @@ class Controller(object):
         if parse:
             self.parse()
 
-        for c in self._creators:
-            c.create(asof_date)
+        for n, c in self._node_creators:
+            obj = c.create(asof_date)
+            for p in self._graph.predecessors(n):
+                field_id = self._graph.edge[p][n].get("field_id")
+                if field_id:
+                    data = self._graph.node[p]["data"]
+                    data[field_id] = obj
 
         return self._data
 
@@ -40,20 +45,24 @@ class Controller(object):
             template = qlf.to_template(data[F.TEMPLATE.id])
             creator = template.get_creator()(data)
             graph.add_node(object_id, template=template, creator=creator, data=data)
-            graph.add_edge(parent_id, object_id)
+            graph.add_edge(parent_id, object_id)  # dependency that doesn't need injection
 
             for field_id, value in data.iteritems():
                 field = FieldName.lookup(field_id)
                 if isinstance(value, str) and value[:2] == '->':
                     dependency = value[2:].strip()
-                    graph.add_edge(object_id, dependency, field_id=field_id)
+                    graph.add_edge(object_id, dependency, field_id=field_id)  # dependency needs injection
 
                 if (field.data_type == D.LIST) and isinstance(value, list):
                     cls._parse_dependency(value, graph, object_id)
         return
 
-    def _compile_creator_list(self):
+    def _compile_node_creator_list(self):
         graph = self._graph
-        nodes = list(nx.dfs_postorder_nodes(graph))
-        creators = [graph.node[n]['creator'] for n in nodes if n != self._ROOT]
-        return creators
+        cycles = list(nx.simple_cycles(graph))
+        if len(cycles):
+            raise ValueError("Found cycles in dependencies "+str(cycles))
+        else:
+            nodes = list(nx.dfs_postorder_nodes(graph))
+            creators = [(n, graph.node[n]['creator']) for n in nodes if n != self._ROOT]
+            return creators
