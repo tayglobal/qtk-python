@@ -55,5 +55,10 @@ class TestConverter(TestCase):
         template = QuantLibConverter.to_template(Template.TS_YIELD_BOND.id)
         self.assertEqual(template, expected)
 
-
+    def test_convert_date_generation(self):
+        dg = ["BACKWARD", "FORWARD", "ZERO", "THIRDWEDNESDAY", "TWENTIETH", "TWENTIETHIMM", "OLDCDS", "CDS"]
+        val = range(0,8)
+        for d, expected in zip(dg, val):
+            observed = QuantLibConverter.to_date_generation(d)
+            self.assertEqual(observed, expected)
 

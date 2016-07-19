@@ -39,7 +39,6 @@ class QuantLibConverter(object):
         "ACTUAL/365JGB": ql.Actual365NoLeap(),
         "ACT/365JGB": ql.Actual365NoLeap(),
     }
-
     _freq_map = {
         "ANNUAL": ql.Annual,
         "SEMIANNUAL": ql.Semiannual,
@@ -50,7 +49,6 @@ class QuantLibConverter(object):
         "WEEKLY": ql.Weekly,
         "DAILY": ql.Daily
     }
-
     _day_convention_map = {
         "FOLLOWING": ql.Following,
         "F": ql.Following,
@@ -80,12 +78,21 @@ class QuantLibConverter(object):
         "CA": ql.Canada(),
         "AU": ql.Australia()
     }
-
     _compounding_map = {
         "SIMPLE": ql.Simple,
         "COMPOUNDED": ql.Compounded,
         "CONTINUOUS": ql.Continuous,
         "SIMPLETHENCOMPOUNDED": ql.SimpleThenCompounded
+    }
+    _date_generation_map = {
+        "BACKWARD": ql.DateGeneration.Backward,
+        "FORWARD": ql.DateGeneration.Forward,
+        "ZERO": ql.DateGeneration.Zero,
+        "THIRDWEDNESDAY": ql.DateGeneration.ThirdWednesday,
+        "TWENTIETH": ql.DateGeneration.Twentieth,
+        "TWENTIETHIMM": ql.DateGeneration.TwentiethIMM,
+        "OLDCDS": ql.DateGeneration.OldCDS,
+        "CDS": ql.DateGeneration.CDS
     }
 
     @classmethod
@@ -210,6 +217,15 @@ class QuantLibConverter(object):
             period = ql.Period(period)
             return period
 
-
-
-
+    @classmethod
+    def to_date_generation(cls, rule):
+        if isinstance(rule, str):
+            rule = rule.upper()
+            return cls._date_generation_map[rule]
+        elif isinstance(rule, int):
+            dg = ql.DateGeneration
+            if rule in set([dg.Backward, dg.Forward, dg.Zero, dg.ThirdWednesday, dg.Twentieth,
+                            dg.TwentiethIMM, dg.OldCDS, dg.CDS]):
+                return rule
+            else:
+                raise ValueError("Invalid date generation rule value")

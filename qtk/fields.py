@@ -45,11 +45,13 @@ class Field(object):
     COUPON = FieldName("Coupon", "Coupon of a bond in % units", D.FLOAT)
     COUPON_FREQ = FieldName("Coupon Frequency", "Coupon frequency of a bond", D.FREQUENCY)
     CURRENCY = FieldName("Currency", "Currency", D.STRING)
-    DATE = FieldName("Date", "Date", D.DATE)
     DATA_SOURCE = FieldName("Data Source", "Data vendor source", D.STRING)
+    DATE = FieldName("Date", "Date", D.DATE)
+    DATE_GENERATION = FieldName("Date Generation", "Date Generation", D.DATE_GENERATION)
     DIRTY_PRICE = FieldName("Dirty Price", "Boolean indicating if quote is dirty or clean", D.BOOL)
     DISCOUNT_BASIS = FieldName("Discount Basis", "Discount Basis", D.DAYCOUNT)
     DISCOUNT_CALENDAR = FieldName("Discount Calendar", "Discount Calendar", D.CALENDAR)
+    DISCOUNT_CURVE = FieldName("Discount Curve", "Discount Curve", D.TERM_STRUCTURE_YIELD)
     END_OF_MONTH = FieldName("End Of Month", "End of month rule", D.BOOL)
     EXCOUPON_PERIOD = FieldName("Ex Coupon Period", "Ex Coupon Period", D.PERIOD)
     EXCOUPON_CALENDAR = FieldName("Ex Coupon Calendar", "Ex Coupon Calendar", D.CALENDAR)
@@ -64,7 +66,7 @@ class Field(object):
     MATURITY_DATE = FieldName("Maturity Date", "Maturity date of a security", D.DATE)
     OBJECT = FieldName("Object", "Instantiation of a QuantLib class",
                        D.OBJECT)  # hardcoded field in creators/common; do not change
-    OBJECT_ID = FieldName("Object ID", "ID of a QuantLib object", D.STRING)
+    OBJECT_ID = FieldName("Object Id", "ID of a QuantLib object", D.STRING)
 
     PAYMENT_BASIS = FieldName("Payment Basis", "Payment Basis", D.DAYCOUNT)
     PAYMENT_CALENDAR = FieldName("Payment Calendar", "Payment Calendar", D.CALENDAR)

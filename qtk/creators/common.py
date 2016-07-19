@@ -48,7 +48,6 @@ class CreatorBase(object):
         :param params:
         :return:
         """
-
         self._data = data
         self._params = params or {}
         self._template = QuantLibConverter.to_template(self._data["Template"])
@@ -86,12 +85,9 @@ class CreatorBase(object):
         for field_id, val in data.iteritems():
             field = FieldName.lookup(field_id)
             cnvrt_val = field.data_type.convert(val)
-
             data[field_id] = cnvrt_val
-
-            if field.data_type == DataType.LIST:
-                data[field_id] = [cls._check_convert_datatypes(v) for v in cnvrt_val]
-
+            # if field.data_type == DataType.LIST:
+            #    data[field_id] = [cls._check_convert_datatypes(v) for v in cnvrt_val]
         return data
 
     def check(self):

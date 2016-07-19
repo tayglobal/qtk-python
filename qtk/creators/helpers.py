@@ -10,8 +10,8 @@ from .utils import ScheduleCreator
 
 class DepositRateHelperCreator(CreatorBase):
     _templates = [T.INST_BOND_TBILL_HELPER]
-    _req_fields = [F.ISSUE_DATE, F.MATURITY_DATE, F.COUPON, F.PRICE, F.CURRENCY]
-    _opt_fields = []
+    _req_fields = [F.ISSUE_DATE, F.MATURITY_DATE, F.COUPON, F.CURRENCY]
+    _opt_fields = [F.PRICE, F.YIELD]
 
     def _bond_schedule(self):
         maturity_date = self.get(F.MATURITY_DATE)
@@ -58,8 +58,6 @@ class DepositRateHelperCreator(CreatorBase):
         )
         return bond_helper
 
-
-
     def _create_deporates(self, asof_date):
         rate = self.get(F.YIELD)
         maturity_date = self.get(F.MATURITY_DATE)
@@ -86,8 +84,8 @@ class DepositRateHelperCreator(CreatorBase):
 
 class BondRateHelperCreator(CreatorBase):
     _templates = [T.INST_BOND_TBOND_HELPER]
-    _req_fields = [F.ISSUE_DATE, F.MATURITY_DATE, F.COUPON, F.COUPON_FREQ, F.PRICE, F.CURRENCY]
-    _opt_fields = []
+    _req_fields = [F.ISSUE_DATE, F.MATURITY_DATE, F.COUPON, F.PRICE, F.CURRENCY]
+    _opt_fields = [F.COUPON_FREQ]
 
     def _create(self, asof_date):
         schedule = ScheduleCreator(self.data).create(asof_date)
@@ -141,10 +139,7 @@ class BondYieldCurveCreator(CreatorBase):
         curve_members = self.get(F.INSTRUMENT_COLLECTION)
         if curve_members:
             intepolator = self.get(F.INTERPOLATION_METHOD, "LinearZero")
-
-            templates = [c[F.TEMPLATE.id] for c in curve_members]
-            creators = [t.get_creator()(curve_members[i]) for i, t in enumerate(templates)]
-            rate_helpers = [c.create(asof_date) for c in creators]
+            rate_helpers = [c[F.OBJECT.id] for c in curve_members]
 
             day_count = self.get(F.DISCOUNT_BASIS)
 

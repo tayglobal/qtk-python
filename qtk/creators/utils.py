@@ -6,20 +6,20 @@ import QuantLib as ql
 
 class ScheduleCreator(CreatorBase):
     _templates = [T.TIME_MAIN_SCHEDULE]
-    _req_fields = [F.ISSUE_DATE, F.MATURITY_DATE, F.COUPON_FREQ]
-    _opt_fields = []
+    _req_fields = [F.ISSUE_DATE, F.MATURITY_DATE, F.COUPON_FREQ, F.ACCRUAL_CALENDAR,
+                   F.ACCRUAL_DAY_CONVENTION]
+    _opt_fields = [F.TERMINATION_DAY_CONVENTION, F.END_OF_MONTH, F.DATE_GENERATION]
 
     def _create(self, asof_date):
-
         maturity_date = self.get(F.MATURITY_DATE)
         issue_date = self.get(F.ISSUE_DATE) or self.get(F.ASOF_DATE) or asof_date
-        #asof_date = asof_date
         coupon_freq = self.get(F.COUPON_FREQ)
         period = ql.Period(coupon_freq)
         calendar = self.get(F.ACCRUAL_CALENDAR)
         convention = self.get(F.ACCRUAL_DAY_CONVENTION)
         termination_convention = self.get(F.TERMINATION_DAY_CONVENTION, convention)
         end_of_month = self.get(F.END_OF_MONTH, True)
+        rule = self.get(F.DATE_GENERATION, ql.DateGeneration.Backward)
 
         schedule = ql.Schedule(issue_date,
                                maturity_date,
@@ -27,6 +27,6 @@ class ScheduleCreator(CreatorBase):
                                calendar,
                                convention,
                                termination_convention,
-                               ql.DateGeneration.Backward,
+                               rule,
                                end_of_month)
         return schedule

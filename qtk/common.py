@@ -145,6 +145,8 @@ class DataType(object):
     DAY_CONVENTION = TypeName("Day Convention", int, qlf.to_day_convention)  # this is enum for day convention
     CALENDAR = TypeName("Calendar", ql.Calendar, qlf.to_calendar)
     PERIOD = TypeName("Period", ql.Period, qlf.to_period)
+    DATE_GENERATION = TypeName("Date Generation", int, qlf.to_date_generation)
+    TERM_STRUCTURE_YIELD = TypeName("Term Structure Yield", ql.YieldTermStructure, lambda x: x)
 
     LIST_INT = _LIST(INT, to_list(int))
     LIST_DATE = _LIST(DATE, to_list(qlf.to_date))
