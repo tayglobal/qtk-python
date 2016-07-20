@@ -16,7 +16,7 @@ class Controller(object):
         self._node_creators = self._compile_node_creator_list()
 
     def parse(self):
-        for n,c in self._node_creators:
+        for n, c in self._node_creators:
             c.check()
 
     def process(self, asof_date, check=True, parse=True, context=None):
@@ -36,9 +36,14 @@ class Controller(object):
 
         return self._data
 
+    def object_data(self, object_id):
+        return self._graph.node[object_id].get("data")
+
+    def object(self, object_id):
+        return self.object_data(object_id)[F.OBJECT.id]
+
     @classmethod
     def _parse_dependency(cls, data_list, graph, parent_id=_ROOT):
-
         for data in data_list:
             data.setdefault(F.OBJECT_ID.id, str(uuid.uuid4()))
             object_id = data[F.OBJECT_ID.id]
@@ -64,5 +69,9 @@ class Controller(object):
             raise ValueError("Found cycles in dependencies "+str(cycles))
         else:
             nodes = list(nx.dfs_postorder_nodes(graph))
-            creators = [(n, graph.node[n]['creator']) for n in nodes if n != self._ROOT]
+            creators = [(n, graph.node[n].get('creator')) for n in nodes if n != self._ROOT]
             return creators
+
+    def output(self, object_id, param_dict=None):
+        creator = self._graph.node[object_id]['creator']
+        return creator.output(param_dict)

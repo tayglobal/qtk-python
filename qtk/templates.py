@@ -52,7 +52,7 @@ class Template(object):
     TS_YIELD_DISCOUNT = GenericTemplate("Discount Curve", C.TERM_STRUCTURE, C.YIELD)
 
     # All Engines
-    ENG_BOND_DISCOUNTING = GenericTemplate("Discounting", C.ENGINE, C.BOND)
+    ENG_BOND_DISCOUNTING = GenericTemplate("Discounting", C.ENGINE, C.BOND, convention_keys=())
 
     # Time Module
     TIME_MAIN_SCHEDULE = GenericTemplate("Schedule", C.TIME, C.MAIN)

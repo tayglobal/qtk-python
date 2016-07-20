@@ -1,7 +1,5 @@
 from qtk.fields import Field as F
 import QuantLib as ql
-from qtk.common import Category as C
-from qtk.templates import Instrument
 from .common import CreatorBase
 from qtk.templates import Template as T
 from . import _creatorslog
@@ -156,8 +154,7 @@ class BondYieldCurveCreator(CreatorBase):
 
 class ZeroCurveCreator(CreatorBase):
     _templates = [T.TS_YIELD_ZERO]
-    _req_fields = [F.LIST_OF_DATES, F.LIST_OF_ZERO_RATES, F.DISCOUNT_BASIS, F.DISCOUNT_CALENDAR,
-                   ]
+    _req_fields = [F.LIST_OF_DATES, F.LIST_OF_ZERO_RATES, F.DISCOUNT_BASIS, F.DISCOUNT_CALENDAR]
     _opt_fields = [F.COMPOUNDING, F.COMPOUNDING_FREQ, F.EXTRAPOLATION]
 
     def _create(self, asof_date):

@@ -38,7 +38,7 @@ class TemplateBase(object):
             self._creator = creator
         else:
             raise ValueError("Creator %s attempted to overwrite creator %s in template %s" %(
-                creator.__class__.__name__, self._creator.__class__.__name__
+                creator.__name__, self._creator.__name__, self.id
             ))
 
     def get_convention_keys(self):
@@ -147,6 +147,7 @@ class DataType(object):
     PERIOD = TypeName("Period", ql.Period, qlf.to_period)
     DATE_GENERATION = TypeName("Date Generation", int, qlf.to_date_generation)
     TERM_STRUCTURE_YIELD = TypeName("Term Structure Yield", ql.YieldTermStructure, lambda x: x)
+    PRICING_ENGINE = TypeName("Pricing Engine", ql.PricingEngine, lambda x: x)
 
     LIST_INT = _LIST(INT, to_list(int))
     LIST_DATE = _LIST(DATE, to_list(qlf.to_date))

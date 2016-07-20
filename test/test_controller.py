@@ -2,6 +2,7 @@ from unittest import TestCase
 from qtk.templates import Template as T
 import copy
 from qtk import Controller, Field, QuantLibConverter as qlc
+import QuantLib as ql
 
 _bond_sample_data = [
     {
@@ -119,8 +120,8 @@ _bond_sample_data = [
      'Yield': '0.00212500',
      'SecurityId': '912796HZ Govt',
      'ObjectId': 'Inst1',
-     "DiscountCurve": "->USD.Bond.Curve",
-     'Template': T.INST_BOND_TBILL_HELPER.id},
+     "PricingEngine": "->BondEngine",
+     'Template': T.INST_BOND_TBILL.id},
     {'AsOfDate': '2016-06-14',
      'Coupon': '0.000000',
      'CouponFrequency': None,
@@ -131,8 +132,8 @@ _bond_sample_data = [
      'Yield': '0.002625',
      'SecurityId': '912796HE Govt',
      'ObjectId': 'Inst2',
-     "DiscountCurve": "->USD.Bond.Curve",
-     'Template': T.INST_BOND_TBILL_HELPER.id},
+     "PricingEngine": "->BondEngine",
+     'Template': T.INST_BOND_TBILL.id},
     {'AsOfDate': '2016-06-14',
      'Coupon': '0.000000',
      'CouponFrequency': None,
@@ -143,72 +144,11 @@ _bond_sample_data = [
      'Yield': '0.003925',
      'SecurityId': '912796JY Govt',
      'ObjectId': 'Inst3',
-     'Template': T.INST_BOND_TBILL_HELPER.id},
-    {'AsOfDate': '2016-06-14',
-     'Coupon': '0.000000',
-     'CouponFrequency': None,
-     'Currency': 'USD',
-     'AccrualBasis': 'ACT/360',
-     'IssueDate': '2016-05-26',
-     'MaturityDate': '2017-05-25',
-     'Yield': '0.005300',
-     'SecurityId': '912796JT Govt',
-     'ObjectId': 'Inst4',
-     'Template': T.INST_BOND_TBILL_HELPER.id},
-    {'AsOfDate': '2016-06-14',
-     'Coupon': '0.008750',
-     'Currency': 'USD',
-     'IssueDate': '2016-05-31',
-     'MaturityDate': '2018-05-31',
-     'Price': '100.292969',
-     'SecurityId': '912828R5 Govt',
-     'ObjectId': 'Inst5',
-     'Template': T.INST_BOND_TBOND_HELPER.id},
-    {'AsOfDate': '2016-06-14',
-     'Coupon': '0.008750',
-     'Currency': 'USD',
-     'IssueDate': '2016-06-15',
-     'MaturityDate': '2019-06-15',
-     'Price': '100.066406',
-     'SecurityId': '912828R8 Govt',
-     'ObjectId': 'Inst6',
-     'Template': T.INST_BOND_TBOND_HELPER.id},
-    {'AsOfDate': '2016-06-14',
-     'Coupon': '0.013750',
-     'Currency': 'USD',
-     'IssueDate': '2016-05-31',
-     'MaturityDate': '2021-05-31',
-     'Price': '101.136719',
-     'SecurityId': '912828R7 Govt',
-     'ObjectId': 'Inst7',
-     'Template': T.INST_BOND_TBOND_HELPER.id},
-    {'AsOfDate': '2016-06-14',
-     'Coupon': '0.016250',
-     'Currency': 'USD',
-     'IssueDate': '2016-05-31',
-     'MaturityDate': '2023-05-31',
-     'Price': '101.382813',
-     'SecurityId': '912828R6 Govt',
-     'ObjectId': 'Inst8',
-     'Template': T.INST_BOND_TBOND_HELPER.id},
-    {'AsOfDate': '2016-06-14',
-     'Coupon': '0.016250',
-     'Currency': 'USD',
-     'IssueDate': '2016-05-16',
-     'MaturityDate': '2026-05-15',
-     'Price': '100.101563',
-     'SecurityId': '912828R3 Govt',
-     "ObjectId": "Inst9",
-     'Template': T.INST_BOND_TBOND_HELPER.id},
-    {'AsOfDate': '2016-06-14',
-     'Coupon': '0.025000',
-     'Currency': 'USD',
-     'IssueDate': '2016-05-16',
-     'MaturityDate': '2046-05-15',
-     'Price': '101.617188',
-     'SecurityId': '912810RS Govt',
-     'ObjectId': 'Inst10',
-     'Template': T.INST_BOND_TBOND_HELPER.id}
+     "PricingEngine": "->BondEngine",
+     'Template': T.INST_BOND_TBILL.id},
+    {'DiscountCurve': "->USD.Bond.Curve",
+     "ObjectId": "BondEngine",
+     "Template": T.ENG_BOND_DISCOUNTING.id}
     ]
 
 
@@ -222,4 +162,8 @@ class TestController(TestCase):
         asof_date = qlc.to_date(self._bond_data[0][Field.ASOF_DATE.id])
 
         res.process(asof_date)
-        curve = self._bond_data[0][Field.OBJECT.id]
+        curve = res.object("USD.Bond.Curve")
+        self.assertIsInstance(curve, ql.YieldTermStructure)
+        bond = res.object("Inst1")
+        price = bond.cleanPrice()
+        return

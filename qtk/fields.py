@@ -74,6 +74,7 @@ class Field(object):
                                        D.DAY_CONVENTION)
     PRICE = FieldName("Price", "Price of a security", D.FLOAT)
     PRICE_FLAVOR = FieldName("Price Flavor", "Flavor such as bid, ask or mid", D.STRING)
+    PRICING_ENGINE = FieldName("Pricing Engine", "Pricing Engine", D.PRICING_ENGINE)
     REDEMPTION = FieldName("Redemption", "Redemption", D.FLOAT)
     ROUNDING = FieldName("Rounding", "Decimal Places of Rounding", D.INT)
     SECURITY_DATA = FieldName("Security Data", "Security refernce data", D.DICT)
