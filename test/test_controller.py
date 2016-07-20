@@ -166,6 +166,7 @@ class TestController(TestCase):
         self.assertIsInstance(curve, ql.YieldTermStructure)
         bond = res.object("Inst1")
         price = bond.cleanPrice()
+        self.assertEqual(price, 99.98642361111114)
         return
 
     def test_duplicate_id_error(self):
@@ -209,3 +210,17 @@ class TestController(TestCase):
         self.assertEqual(error, 'Incompatible data type for field PricingEngine in object Inst3')
         return
 
+    def test_context(self):
+        curve_data = [self._bond_data[0]]
+        rest_data = self._bond_data[1:]
+        res = Controller(curve_data)
+        asof_date = qlc.to_date(self._bond_data[0][Field.ASOF_DATE.id])
+        res.process(asof_date)
+        context = res.data
+
+        res = Controller(rest_data, context=context)
+        res.process(asof_date)
+        bond = res.object("Inst1")
+        price = bond.cleanPrice()
+        self.assertEqual(price, 99.98642361111114)
+        return

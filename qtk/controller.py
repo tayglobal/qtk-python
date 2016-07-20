@@ -13,15 +13,18 @@ class Controller(object):
     def __init__(self, data, context=None):
         self._data = copy.deepcopy(data)
         self._graph = nx.DiGraph()
+        self._context = context
         edges = []
         self._parse_nodes(self._data, self._graph, edges)
+        self._parse_context_nodes(self._context, self._graph)
         self._parse_edges(self._graph, edges)
         self._node_creators = self._compile_node_creator_list()
-        self._context = context
+
 
     def parse(self):
         for n, c in self._node_creators:
-            c.check()
+            if c:
+                c.check()
 
     def process(self, asof_date, check=True, parse=True):
         asof_date = qlf.to_date(asof_date)
@@ -31,14 +34,16 @@ class Controller(object):
             self.parse()
 
         for n, c in self._node_creators:
-            obj = c.create(asof_date)
+            obj = c.create(asof_date) if c else self._graph.node[n]["data"].get(F.OBJECT.id)
             for p in self._graph.predecessors(n):
-                field_id = self._graph.edge[p][n].get("field_id")
+                edge = self._graph.edge[p][n]
+                field_id = edge.get("field_id")
                 if field_id:
                     data = self._graph.node[p]["data"]
                     field = FieldName.lookup(field_id)
                     if field.check_type(obj):
                         data[field_id] = obj
+                        edge["resolved"] = True
                     else:
                         raise ValueError("Incompatible data type for field %s in object %s" %(field_id, p))
 
@@ -49,6 +54,10 @@ class Controller(object):
 
     def object(self, object_id):
         return self.object_data(object_id)[F.OBJECT.id]
+
+    @property
+    def data(self):
+        return self._data
 
     @classmethod
     def _parse_nodes(cls, data_list, graph, edges, parent_id=_ROOT):
@@ -73,6 +82,24 @@ class Controller(object):
         return
 
     @classmethod
+    def _parse_context_nodes(cls, data_list, graph):
+        if data_list:
+            for data in data_list:
+                data.setdefault(F.OBJECT_ID.id, str(uuid.uuid4()))
+                object_id = data[F.OBJECT_ID.id]
+                graph.add_node(object_id, data=data)
+
+                for field_id, value in data.iteritems():
+                    field = FieldName.lookup(field_id)
+
+                    if (field.data_type == D.LIST) and isinstance(value, list):
+                        cls._parse_context_nodes(value, graph)
+            return
+
+
+
+
+    @classmethod
     def _parse_edges(cls, graph, edges):
         for parent, child, attr in edges:
             graph.add_edge(parent, child, attr)
@@ -84,7 +111,11 @@ class Controller(object):
             raise ValueError("Found cycles in dependencies "+str(cycles))
         else:
             nodes = list(nx.dfs_postorder_nodes(graph))
-            creators = [(n, graph.node[n].get('creator')) for n in nodes if n != self._ROOT]
+            nodes.remove(self._ROOT)  # exclude root
+            creators = []
+            for n in nodes:
+                creator = graph.node[n].get('creator')
+                creators.append((n, creator))
             return creators
 
     def output(self, object_id, param_dict=None):
