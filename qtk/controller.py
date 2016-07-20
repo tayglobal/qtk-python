@@ -4,22 +4,26 @@ from converters import QuantLibConverter as qlf
 import QuantLib as ql
 import networkx as nx
 import uuid
+import copy
 
 
 class Controller(object):
     _ROOT = "~ROOT~"
 
-    def __init__(self, data):
-        self._data = data if isinstance(data, list) else [data]
+    def __init__(self, data, context=None):
+        self._data = copy.deepcopy(data)
         self._graph = nx.DiGraph()
-        self._parse_dependency(self._data, self._graph)
+        edges = []
+        self._parse_nodes(self._data, self._graph, edges)
+        self._parse_edges(self._graph, edges)
         self._node_creators = self._compile_node_creator_list()
+        self._context = context
 
     def parse(self):
         for n, c in self._node_creators:
             c.check()
 
-    def process(self, asof_date, check=True, parse=True, context=None):
+    def process(self, asof_date, check=True, parse=True):
         asof_date = qlf.to_date(asof_date)
         ql.Settings.instance().evaluationDate = asof_date
 
@@ -32,7 +36,11 @@ class Controller(object):
                 field_id = self._graph.edge[p][n].get("field_id")
                 if field_id:
                     data = self._graph.node[p]["data"]
-                    data[field_id] = obj
+                    field = FieldName.lookup(field_id)
+                    if field.check_type(obj):
+                        data[field_id] = obj
+                    else:
+                        raise ValueError("Incompatible data type for field %s in object %s" %(field_id, p))
 
         return self._data
 
@@ -43,24 +51,31 @@ class Controller(object):
         return self.object_data(object_id)[F.OBJECT.id]
 
     @classmethod
-    def _parse_dependency(cls, data_list, graph, parent_id=_ROOT):
+    def _parse_nodes(cls, data_list, graph, edges, parent_id=_ROOT):
         for data in data_list:
             data.setdefault(F.OBJECT_ID.id, str(uuid.uuid4()))
             object_id = data[F.OBJECT_ID.id]
             template = qlf.to_template(data[F.TEMPLATE.id])
             creator = template.get_creator()(data)
+            if graph.has_node(object_id):
+                raise ValueError("Duplicate ObjectId %s found" % object_id)
             graph.add_node(object_id, template=template, creator=creator, data=data)
-            graph.add_edge(parent_id, object_id)  # dependency that doesn't need injection
+            edges.append((parent_id, object_id, {}))  # dependency that doesn't need injection
 
             for field_id, value in data.iteritems():
                 field = FieldName.lookup(field_id)
                 if isinstance(value, str) and value[:2] == '->':
                     dependency = value[2:].strip()
-                    graph.add_edge(object_id, dependency, field_id=field_id)  # dependency needs injection
+                    edges.append((object_id, dependency, {"field_id": field_id}))  # dependency needs injection
 
                 if (field.data_type == D.LIST) and isinstance(value, list):
-                    cls._parse_dependency(value, graph, object_id)
+                    cls._parse_nodes(value, graph, edges, object_id)
         return
+
+    @classmethod
+    def _parse_edges(cls, graph, edges):
+        for parent, child, attr in edges:
+            graph.add_edge(parent, child, attr)
 
     def _compile_node_creator_list(self):
         graph = self._graph

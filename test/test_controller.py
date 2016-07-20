@@ -155,7 +155,7 @@ _bond_sample_data = [
 class TestController(TestCase):
 
     def setUp(self):
-        self._bond_data = copy.deepcopy(_bond_sample_data)
+        self._bond_data = _bond_sample_data
 
     def test_graph_dependency(self):
         res = Controller(self._bond_data)
@@ -167,3 +167,45 @@ class TestController(TestCase):
         bond = res.object("Inst1")
         price = bond.cleanPrice()
         return
+
+    def test_duplicate_id_error(self):
+        data = self._bond_data + [self._bond_data[-1]]
+        error = ""
+        try:
+            res = Controller(data)
+            asof_date = qlc.to_date(self._bond_data[0][Field.ASOF_DATE.id])
+            res.process(asof_date)
+        except ValueError as e:
+            error = e.message
+
+        self.assertEqual(error, 'Duplicate ObjectId BondEngine found')
+        return
+
+    def test_dependency_cycles_err(self):
+        data = copy.deepcopy(self._bond_data)
+        data[-1]['DiscountCurve'] = "->Inst2"
+        error = ""
+        try:
+            res = Controller(data)
+            asof_date = qlc.to_date(self._bond_data[0][Field.ASOF_DATE.id])
+            res.process(asof_date)
+        except ValueError as e:
+            error = e.message
+
+        self.assertEqual(error, "Found cycles in dependencies [['Inst2', 'BondEngine']]")
+        return
+
+    def test_datatype_check_err(self):
+        data = copy.deepcopy(self._bond_data)
+        data[-2]['PricingEngine'] = "->USD.Bond.Curve"
+        error = ""
+        try:
+            res = Controller(data)
+            asof_date = qlc.to_date(self._bond_data[0][Field.ASOF_DATE.id])
+            res.process(asof_date)
+        except ValueError as e:
+            error = e.message
+
+        self.assertEqual(error, 'Incompatible data type for field PricingEngine in object Inst3')
+        return
+

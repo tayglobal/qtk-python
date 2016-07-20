@@ -10,6 +10,7 @@ _bond_sample_data = {
     'Country': 'US',
     'Currency': 'USD',
     'DataSource': 'TEST',
+    "ObjectId": "Curve",
     'InstrumentCollection': [{'AsOfDate': '2016-06-14',
                               'Coupon': '0.000000',
                               'CouponFrequency': None,
@@ -112,7 +113,7 @@ class TestCurves(TestCase):
         asof_date = qlc.to_date(self._bond_data[Field.ASOF_DATE.id])
 
         res.process(asof_date)
-        curve = self._bond_data[Field.OBJECT.id]
+        curve = res.object("Curve")
         self.assertIsInstance(curve, ql.YieldTermStructure)
 
         tenors = range(0,13,1) + [60, 90, 120, 240, 300, 359, 360]
@@ -133,6 +134,7 @@ class TestCurves(TestCase):
             "DiscountBasis": "30/360",
             'Template': 'TermStructure.Yield.ZeroCurve',
             "Currency": "USD",
+            "ObjectId": "Curve",
             "DiscountCalendar": "UnitedStates.GovernmentBond"
 
         }
@@ -140,7 +142,7 @@ class TestCurves(TestCase):
         asof_date = qlc.to_date("7/5/2016")
 
         ret = res.process(asof_date)
-        zcurve = data[Field.OBJECT.id]
+        zcurve = res.object("Curve")
         observed = [zcurve.discount(d) for d in data["ListOfZeroRate"]]
         expected = [1.0, 0.9999999861538462, 0.9999999446153861, 0.9999998753846231]
         self.assertListEqual(observed, expected)
