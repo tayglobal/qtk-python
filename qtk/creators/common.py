@@ -115,9 +115,11 @@ class CreatorBase(object):
 
     def get(self, field, default_value=None):
         field_id = field.id
-        conventions = self._conventions.get(field_id)
-        return self._data.get(field_id, conventions) if default_value is None \
-            else self._data.get(field_id, default_value)
+        if default_value is None:
+            conventions = self._conventions.get(field_id)
+            return self._data.get(field_id, conventions)
+        else:
+            return self._data.get(field_id, default_value)
 
     @property
     def data(self):

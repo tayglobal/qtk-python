@@ -52,6 +52,7 @@ class Field(object):
     DISCOUNT_BASIS = FieldName("Discount Basis", "Discount Basis", D.DAYCOUNT)
     DISCOUNT_CALENDAR = FieldName("Discount Calendar", "Discount Calendar", D.CALENDAR)
     DISCOUNT_CURVE = FieldName("Discount Curve", "Discount Curve", D.TERM_STRUCTURE_YIELD)
+    DISCOUNT_FACTOR = FieldName("Discount Factor", "Discount Factor", D.FLOAT)
     END_OF_MONTH = FieldName("End Of Month", "End of month rule", D.BOOL)
     EXCOUPON_PERIOD = FieldName("Ex Coupon Period", "Ex Coupon Period", D.PERIOD)
     EXCOUPON_CALENDAR = FieldName("Ex Coupon Calendar", "Ex Coupon Calendar", D.CALENDAR)
@@ -95,4 +96,5 @@ class Field(object):
     LIST_OF_DATES = _LIST(DATE, D.LIST_DATE)
     LIST_OF_ZERO_RATES = _LIST(ZERO_RATE, D.LIST_FLOAT)
     LIST_OF_COUPONS = _LIST(COUPON, D.LIST_FLOAT)
+    LIST_OF_DISCOUNT_FACTORS = _LIST(DISCOUNT_FACTOR, D.LIST_FLOAT)
 

@@ -1,6 +1,6 @@
 import QuantLib as ql
 from unittest import TestCase
-from qtk import Controller, Field, QuantLibConverter as qlc, Template as T
+from qtk import Controller, Field as F, QuantLibConverter as qlc, Template as T
 
 import copy
 
@@ -110,7 +110,7 @@ class TestCurves(TestCase):
 
     def test_us_bond_curve(self):
         res = Controller([self._bond_data])
-        asof_date = qlc.to_date(self._bond_data[Field.ASOF_DATE.id])
+        asof_date = qlc.to_date(self._bond_data[F.ASOF_DATE.id])
 
         res.process(asof_date)
         curve = res.object("Curve")
@@ -143,8 +143,29 @@ class TestCurves(TestCase):
 
         ret = res.process(asof_date)
         zcurve = res.object("Curve")
-        observed = [zcurve.discount(d) for d in data["ListOfZeroRate"]]
-        expected = [1.0, 0.9999999861538462, 0.9999999446153861, 0.9999998753846231]
+        data2 = res.object_data("Curve")
+        observed = [zcurve.discount(d) for d in data2["ListOfDate"]]
+        expected = [1.0, 0.9999277803857397, 0.9996889372789323, 0.9992835900775519]
+        self.assertListEqual(observed, expected)
+
+    def test_discount_curve(self):
+        data = {
+            "ListOfDate": ["7/5/2016", "8/1/2016", "9/1/2016", "10/1/2016"],
+            "ListOfDiscountFactor": [1.0, 0.99, 0.98, 0.97],
+            "DiscountBasis": "30/360",
+            'Template': 'TermStructure.Yield.DiscountCurve',
+            "Currency": "USD",
+            "ObjectId": "Curve",
+            "DiscountCalendar": "UnitedStates.GovernmentBond"
+        }
+
+        res = Controller([data])
+        asof_date = qlc.to_date("7/5/2016")
+        res.process(asof_date)
+        dcurve = res.object("Curve")
+        data2 = res.object_data("Curve")
+        observed = [dcurve.discount(d) for d in data2["ListOfDate"]]
+        expected = data["ListOfDiscountFactor"]
         self.assertListEqual(observed, expected)
 
 

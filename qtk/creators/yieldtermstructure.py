@@ -173,4 +173,18 @@ class ZeroCurveCreator(CreatorBase):
         return zero_curve
 
 
+class DiscountCurveCreator(CreatorBase):
+    _templates = [T.TS_YIELD_DISCOUNT]
+    _req_fields = [F.LIST_OF_DATES, F.LIST_OF_DISCOUNT_FACTORS, F.DISCOUNT_BASIS, F.DISCOUNT_CALENDAR]
+    _opt_fields = []
+
+    def _create(self, asof_date):
+        dates = self.get(F.LIST_OF_DATES)
+        discount_factors = self.get(F.LIST_OF_DISCOUNT_FACTORS)
+        discount_basis = self.get(F.DISCOUNT_BASIS)
+        discount_calendar = self.get(F.DISCOUNT_CALENDAR)
+        discount_curve = ql.DiscountCurve(dates, discount_factors,
+                                          discount_basis, discount_calendar)
+        return discount_curve
+
 
