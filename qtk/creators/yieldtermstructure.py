@@ -188,3 +188,9 @@ class DiscountCurveCreator(CreatorBase):
         return discount_curve
 
 
+class FlatForwardCurveCreator(CreatorBase):
+    _templates = [T.TS_YIELD_FLAT]
+    _req_fields = [F.ASOF_DATE]
+
+    def _create(self, asof_date):
+        pass

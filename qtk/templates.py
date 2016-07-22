@@ -50,6 +50,7 @@ class Template(object):
     TS_YIELD_BOND = GenericTemplate("Bond Curve", C.TERM_STRUCTURE, C.YIELD)
     TS_YIELD_ZERO = GenericTemplate("Zero Curve", C.TERM_STRUCTURE, C.YIELD)
     TS_YIELD_DISCOUNT = GenericTemplate("Discount Curve", C.TERM_STRUCTURE, C.YIELD)
+    TS_YIELD_FLAT = GenericTemplate("Flat Curve", C.TERM_STRUCTURE, C.YIELD)
 
     # All Engines
     ENG_BOND_DISCOUNTING = GenericTemplate("Discounting", C.ENGINE, C.BOND, convention_keys=())
