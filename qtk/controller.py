@@ -1,6 +1,6 @@
 from .fields import Field as F, FieldName
 from .common import DataType as D
-from converters import QuantLibConverter as qlf
+from .converters import QuantLibConverter as qlf
 import QuantLib as ql
 import networkx as nx
 import uuid
@@ -71,7 +71,7 @@ class Controller(object):
             graph.add_node(object_id, template=template, creator=creator, data=data)
             edges.append((parent_id, object_id, {}))  # dependency that doesn't need injection
 
-            for field_id, value in data.iteritems():
+            for field_id, value in data.items():
                 field = FieldName.lookup(field_id)
                 if isinstance(value, str) and value[:2] == '->':
                     dependency = value[2:].strip()
@@ -89,7 +89,7 @@ class Controller(object):
                 object_id = data[F.OBJECT_ID.id]
                 graph.add_node(object_id, data=data)
 
-                for field_id, value in data.iteritems():
+                for field_id, value in data.items():
                     field = FieldName.lookup(field_id)
 
                     if (field.data_type == D.LIST) and isinstance(value, list):

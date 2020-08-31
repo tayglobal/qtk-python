@@ -39,4 +39,4 @@ asof_date = "1/15/2015"
 
 ret = res.process(asof_date)
 tbond = res.object("USD.TBond")
-print tbond.NPV()
+print(tbond.NPV())

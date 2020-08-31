@@ -36,14 +36,13 @@ class CreatorBaseMeta(type):
 
 
 
-class CreatorBase(object):
+class CreatorBase(object, metaclass=CreatorBaseMeta):
     """
     Every creator must inherit this class. This class adds properties
     to link every template with a creator in an automated way. In order
     to do this, every class that inherits CreatorBase must define a variable
     "_templates" which is a list of all templates that it can instantiate.
     """
-    __metaclass__ = CreatorBaseMeta
     _base = True
 
     def __init__(self, data, params=None):
@@ -88,7 +87,7 @@ class CreatorBase(object):
 
     @classmethod
     def _check_convert_datatypes(cls, data):
-        for field_id, val in data.iteritems():
+        for field_id, val in data.items():
             field = FieldName.lookup(field_id)
             cnvrt_val = field.data_type.convert(val)
             data[field_id] = cnvrt_val

@@ -57,7 +57,7 @@ class NameBase(object):
         name_id = name_id or self.toid(name)
         self._id = prefix+name_id
         self._name = name
-        if self._id_map.has_key(self._id):
+        if self._id in self._id_map:
             raise ValueError("Duplicate id "+self._id)
         else:
             self._id_map[self._id] = self

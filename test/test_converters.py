@@ -12,10 +12,10 @@ class TestConverter(TestCase):
         pass
 
     def test_convert_daycount(self):
-        keys = QuantLibConverter._daycount_map.keys()
-        vals = QuantLibConverter._daycount_map.values()
+        keys = list(QuantLibConverter._daycount_map.keys())
+        vals = list(QuantLibConverter._daycount_map.values())
 
-        for key, val in QuantLibConverter._daycount_map.iteritems():
+        for key, val in QuantLibConverter._daycount_map.items():
             dc = QuantLibConverter.to_daycount(key)
             self.assertTrue(dc == val)
             dc = QuantLibConverter.to_daycount(val)
@@ -57,7 +57,7 @@ class TestConverter(TestCase):
 
     def test_convert_date_generation(self):
         dg = ["BACKWARD", "FORWARD", "ZERO", "THIRDWEDNESDAY", "TWENTIETH", "TWENTIETHIMM", "OLDCDS", "CDS"]
-        val = range(0,8)
+        val = list(range(0,8))
         for d, expected in zip(dg, val):
             observed = QuantLibConverter.to_date_generation(d)
             self.assertEqual(observed, expected)

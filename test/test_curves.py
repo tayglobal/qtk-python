@@ -116,7 +116,7 @@ class TestCurves(TestCase):
         curve = res.object("Curve")
         self.assertIsInstance(curve, ql.YieldTermStructure)
 
-        tenors = range(0,13,1) + [60, 90, 120, 240, 300, 359, 360]
+        tenors = list(range(0,13,1)) + [60, 90, 120, 240, 300, 359, 360]
         vals = [1.0, 0.995463027383, 0.944034654878, 0.895839444646, 0.848938836737, 0.654147091,
                 0.553886881, 0.459282459, 0.458070805]
         calendar = ql.UnitedStates(ql.UnitedStates.GovernmentBond)
@@ -125,7 +125,7 @@ class TestCurves(TestCase):
             d = calendar.advance(asof_date, ql.Period(t, ql.Months),ql.ModifiedFollowing)
             o = curve.discount(d)
             #self.assertAlmostEqual(o, v, 10, msg="("+str(t)+","+str(d)+","+str(o)+","+str(v)+")")
-            print t, d, o
+            print(t, d, o)
 
     def test_zero_curve(self):
         data = {
