@@ -34,12 +34,12 @@ class Controller(object):
             self.parse()
 
         for n, c in self._node_creators:
-            obj = c.create(asof_date) if c else self._graph.node[n]["data"].get(F.OBJECT.id)
+            obj = c.create(asof_date) if c else self._graph.nodes[n]["data"].get(F.OBJECT.id)
             for p in self._graph.predecessors(n):
-                edge = self._graph.edge[p][n]
+                edge = self._graph.edges[p, n]
                 field_id = edge.get("field_id")
                 if field_id:
-                    data = self._graph.node[p]["data"]
+                    data = self._graph.nodes[p]["data"]
                     field = FieldName.lookup(field_id)
                     if field.check_type(obj):
                         data[field_id] = obj
@@ -50,7 +50,7 @@ class Controller(object):
         return self._data
 
     def object_data(self, object_id):
-        return self._graph.node[object_id].get("data")
+        return self._graph.nodes[object_id].get("data")
 
     def object(self, object_id):
         return self.object_data(object_id)[F.OBJECT.id]
@@ -102,7 +102,7 @@ class Controller(object):
     @classmethod
     def _parse_edges(cls, graph, edges):
         for parent, child, attr in edges:
-            graph.add_edge(parent, child, attr)
+            graph.add_edge(parent, child, **attr)
 
     def _compile_node_creator_list(self):
         graph = self._graph
@@ -114,10 +114,10 @@ class Controller(object):
             nodes.remove(self._ROOT)  # exclude root
             creators = []
             for n in nodes:
-                creator = graph.node[n].get('creator')
+                creator = graph.nodes[n].get('creator')
                 creators.append((n, creator))
             return creators
 
     def output(self, object_id, param_dict=None):
-        creator = self._graph.node[object_id]['creator']
+        creator = self._graph.nodes[object_id]['creator']
         return creator.output(param_dict)

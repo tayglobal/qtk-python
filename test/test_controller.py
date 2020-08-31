@@ -4,6 +4,7 @@ import copy
 from qtk import Controller, Field, QuantLibConverter as qlc
 import QuantLib as ql
 
+
 _bond_sample_data = [
     {
     'AsOfDate': '2016-06-14',
@@ -177,7 +178,7 @@ class TestController(TestCase):
             asof_date = qlc.to_date(self._bond_data[0][Field.ASOF_DATE.id])
             res.process(asof_date)
         except ValueError as e:
-            error = e.message
+            error = e.args[0]
 
         self.assertEqual(error, 'Duplicate ObjectId BondEngine found')
         return
@@ -191,10 +192,15 @@ class TestController(TestCase):
             asof_date = qlc.to_date(self._bond_data[0][Field.ASOF_DATE.id])
             res.process(asof_date)
         except ValueError as e:
-            error = e.message
+            error = e.args[0]
 
-        self.assertEqual(error, "Found cycles in dependencies [['Inst2', 'BondEngine']]")
-        return
+
+        # Error message is indeterministic could be either  of the below
+        # [['Inst2', 'BondEngine']]
+        # [['BondEngine', 'BondEngine']]
+        self.assertTrue(error.startswith("Found cycles in dependencies "))
+        self.assertTrue("'Inst2'" in error)
+        self.assertTrue("'BondEngine'" in error)
 
     def test_datatype_check_err(self):
         data = copy.deepcopy(self._bond_data)
@@ -205,7 +211,7 @@ class TestController(TestCase):
             asof_date = qlc.to_date(self._bond_data[0][Field.ASOF_DATE.id])
             res.process(asof_date)
         except ValueError as e:
-            error = e.message
+            error = e.args[0]
 
         self.assertEqual(error, 'Incompatible data type for field PricingEngine in object Inst3')
         return

@@ -17,9 +17,9 @@ class TestConverter(TestCase):
 
         for key, val in QuantLibConverter._daycount_map.items():
             dc = QuantLibConverter.to_daycount(key)
-            self.assertTrue(dc == val)
+            self.assertEqual(dc, val)
             dc = QuantLibConverter.to_daycount(val)
-            self.assertTrue(dc == val)
+            self.assertEqual(dc, val)
 
         dc_choices = ["ACT/ACT", "ACT/ACT (BOND)", "30/360", "ACT/365", "Actual/365 (Fixed)", "NL/365"]
         dc_values = [ql.ActualActual(),
@@ -30,7 +30,7 @@ class TestConverter(TestCase):
                        ql.Actual365NoLeap()]
         for dc_choice, dc_value in zip(dc_choices, dc_values):
             dc = QuantLibConverter.to_daycount(dc_choice)
-            self.assertTrue(dc == dc_value)
+            self.assertEqual(dc, dc_value)
 
     def test_convert_date(self):
         expected = ql.Date(1, 5, 2016)

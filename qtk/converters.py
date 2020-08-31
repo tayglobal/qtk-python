@@ -1,5 +1,6 @@
 import QuantLib as ql
 import datetime
+import re
 from dateutil.parser import parse
 
 
@@ -108,7 +109,7 @@ class QuantLibConverter(object):
         if isinstance(day_count, ql.DayCounter):
             return day_count
         else:
-            day_count = day_count.upper().translate(None, " ()")
+            day_count = re.sub(r' \(([A-Z]+)\)', r'\1', day_count.upper())
             return cls._daycount_map[day_count]
 
     @classmethod
@@ -120,7 +121,7 @@ class QuantLibConverter(object):
                 freq = int(freq)
                 return freq
             except ValueError as e:
-                freq = freq.upper().translate(None, " ")
+                freq = re.sub(r' \(([A-Z]+)\)', r'\1', freq.upper())
                 return cls._freq_map[freq]
             except:
                 raise ValueError("Invalid value for freq")
@@ -185,7 +186,7 @@ class QuantLibConverter(object):
 
     @classmethod
     def to_day_convention(cls, day_convention):
-        day_convention = day_convention.upper().translate(None, " ")
+        day_convention = re.sub(r' \(([A-Z]+)\)', r'\1', day_convention.upper())
         return cls._day_convention_map[day_convention]
 
     @classmethod
@@ -193,7 +194,7 @@ class QuantLibConverter(object):
         if isinstance(calendar, ql.Calendar):
             return calendar
         else:
-            calendar = calendar.upper().translate(None, " ")
+            calendar = re.sub(r' \(([A-Z]+)\)', r'\1', calendar.upper())
             return cls._calendar_map[calendar]
 
     @classmethod
